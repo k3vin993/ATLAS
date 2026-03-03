@@ -6,3 +6,6 @@ config.yml
 dist/
 .DS_Store
 .github/
+.idea
+atlas.db-shm
+atlas.db-wal

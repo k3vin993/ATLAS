@@ -156,7 +156,7 @@ export class ConnectorRunner {
     for (const file of files) {
       const filepath = join(dir, file);
       try {
-        const rows = this._parseFile(filepath);
+        const rows = await this._parseFile(filepath);
         if (rows.length) total += this._upsertRows(connector, entity, rows);
       } catch (e) {
         console.error(`[ATLAS] Filesystem connector "${connector.id}" failed to parse ${file}: ${e.message}`);
@@ -165,7 +165,7 @@ export class ConnectorRunner {
     return total;
   }
 
-  _parseFile(filepath) {
+  async _parseFile(filepath) {
     const ext = extname(filepath).slice(1).toLowerCase();
 
     if (ext === 'json') {
