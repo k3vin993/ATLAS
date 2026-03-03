@@ -1,0 +1,12 @@
+name: cargofy/atlas
+description: "ATLAS — AI Transport Logistics Agent Standard. Open-source MCP server for logistics. Gives AI agents deep context about shipments, carriers, rates, and documents without data leaving your infrastructure."
+license: Apache-2.0
+tags:
+  - logistics
+  - transport
+  - freight
+  - supply-chain
+  - enterprise
+  - self-hosted
+homepage: https://cargohub.co
+repository: https://github.com/cargofy/ATLAS
