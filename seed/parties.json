@@ -1,0 +1,31 @@
+[
+  {
+    "id": "PARTY-ACME",
+    "name": "ACME Manufacturing GmbH",
+    "role": "shipper",
+    "country": "DE",
+    "city": "Munich",
+    "contact_email": "logistics@acme-mfg.de",
+    "contact_phone": "+49 89 123456",
+    "tax_id": "DE123456789",
+    "notes": "Key account. Prefers Trans-EU Logistics for DE→PL lanes."
+  },
+  {
+    "id": "PARTY-NOVA",
+    "name": "Nova Foods sp. z o.o.",
+    "role": "shipper",
+    "country": "PL",
+    "city": "Poznan",
+    "contact_email": "supply@novafoods.pl",
+    "notes": "Requires GDP-certified carriers. All cargo refrigerated."
+  },
+  {
+    "id": "PARTY-3PL-FWD",
+    "name": "Forward Group",
+    "role": "freight_broker",
+    "country": "UA",
+    "city": "Kyiv",
+    "contact_email": "ops@forward.group",
+    "notes": "Internal party. 3PL managing ACME and Nova Foods accounts."
+  }
+]

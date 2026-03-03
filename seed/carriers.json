@@ -1,0 +1,37 @@
+[
+  {
+    "id": "CARR-001",
+    "name": "Trans-EU Logistics",
+    "country": "PL",
+    "type": "ftl",
+    "rating": 4.7,
+    "contact_email": "ops@transeu-logistics.pl",
+    "contact_phone": "+48 22 123 4567",
+    "fleet_size": 120,
+    "certificates": ["ADR", "GDP", "ISO9001"],
+    "lanes": ["PL-DE", "PL-FR", "UA-PL", "DE-NL"]
+  },
+  {
+    "id": "CARR-002",
+    "name": "CoolFreight UA",
+    "country": "UA",
+    "type": "ftl",
+    "rating": 4.5,
+    "contact_email": "dispatch@coolfreight.ua",
+    "contact_phone": "+380 44 987 6543",
+    "fleet_size": 45,
+    "certificates": ["GDP", "HACCP"],
+    "lanes": ["UA-PL", "UA-RO", "UA-HU"]
+  },
+  {
+    "id": "CARR-003",
+    "name": "Nordic Sea Lines",
+    "country": "DE",
+    "type": "fcl",
+    "rating": 4.8,
+    "contact_email": "booking@nordicsealines.de",
+    "fleet_size": 12,
+    "certificates": ["ISO14001", "ISPS"],
+    "lanes": ["DE-NO", "DE-SE", "DE-DK"]
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SLA-ACME-STANDARD",
+    "name": "ACME Standard Road",
+    "party_id": "PARTY-ACME",
+    "mode": "road",
+    "planned_hours": 36,
+    "warning_threshold_hours": 32,
+    "critical_threshold_hours": 40,
+    "kpi_otd_target": 95,
+    "notes": "Standard SLA for ACME DE→PL lane. OTD target: 95%."
+  },
+  {
+    "id": "SLA-NOVA-GDP",
+    "name": "Nova Foods GDP Express",
+    "party_id": "PARTY-NOVA",
+    "mode": "road",
+    "planned_hours": 24,
+    "warning_threshold_hours": 22,
+    "critical_threshold_hours": 26,
+    "kpi_otd_target": 98,
+    "notes": "Pharma-grade SLA. Temperature deviation = immediate escalation."
+  }
+]

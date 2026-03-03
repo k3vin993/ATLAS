@@ -73,19 +73,39 @@ async function cmdSeed() {
   if (!existsSync(dir)) { console.error(`❌ Not found: ${dir}`); process.exit(1); }
   const { Atlas } = await import('../src/atlas.js');
   const { ConnectorRunner } = await import('../src/connector-runner.js');
+  const { statSync } = await import('fs');
   const atlas = new Atlas();
   try { atlas.loadConfig(); } catch {}
   atlas.initDb();
   const runner = new ConnectorRunner(atlas, atlas.config ?? {});
-  const files = readdirSync(dir).filter(f => /\.(json|csv|xlsx?)$/i.test(f));
-  console.log(`\n🌱 Seeding ${files.length} files from ${dir}\n`);
-  for (const file of files) {
-    const entity = file.replace(/[-_]\d+/g, '').replace(/\.[^.]+$/, '');
-    const rows = await runner._parseFile(join(dir, file));
-    const n = runner._upsertRows({ id: 'seed', mapping: null }, entity, rows);
-    console.log(`   ${file.padEnd(30)} → ${entity}: ${n} records`);
+
+  // Recursive file walk
+  function walkFiles(folder, results = []) {
+    for (const entry of readdirSync(folder)) {
+      const full = join(folder, entry);
+      if (statSync(full).isDirectory()) {
+        walkFiles(full, results);
+      } else if (/\.(json|csv|xlsx?|md)$/i.test(entry)) {
+        results.push(full);
+      }
+    }
+    return results;
   }
-  console.log('\n✅ Seed complete\n');
+
+  const files = walkFiles(dir);
+  console.log(`\n🌱 Seeding ${files.length} files from ${dir}\n`);
+  let total = 0;
+  for (const filepath of files) {
+    const file   = filepath.replace(dir + '/', '').replace(dir + '\\', '');
+    const base   = file.split('/').pop().split('\\').pop(); // filename only
+    const entity = base.replace(/[-_]\d+/g, '').replace(/\.[^.]+$/, '');
+    const rows   = await runner._parseFile(filepath);
+    if (!rows.length) { console.log(`   ${file.padEnd(38)} → (empty, skipped)`); continue; }
+    const n = runner._upsertRows({ id: 'seed', mapping: null }, entity, rows);
+    console.log(`   ${file.padEnd(38)} → ${entity}: ${n} records`);
+    total += n;
+  }
+  console.log(`\n✅ Seed complete — ${total} total records\n`);
 }
 
 async function cmdStatus() {

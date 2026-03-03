@@ -1,0 +1,27 @@
+[
+  {
+    "id": "ISS-001",
+    "shipment_id": "SHP-003",
+    "type": "loading_delay",
+    "severity": "medium",
+    "status": "open",
+    "title": "Driver waiting 90min at loading dock",
+    "description": "Hamburg warehouse not ready at scheduled 10:00. Driver arrived on time. Estimated delay: +2h on delivery.",
+    "requires_replanning": false,
+    "reported_at": "2026-03-03T11:20:00Z",
+    "reported_by": "CARR-001",
+    "notes": "Shipper notified. No SLA breach yet."
+  },
+  {
+    "id": "ISS-002",
+    "shipment_id": "SHP-001",
+    "type": "document_missing",
+    "severity": "low",
+    "status": "open",
+    "title": "CMR not countersigned by shipper",
+    "description": "CMR DOC-001 issued but shipper has not signed yet. Required before border crossing PL-DE.",
+    "requires_replanning": false,
+    "reported_at": "2026-03-03T09:00:00Z",
+    "reported_by": "PARTY-3PL-FWD"
+  }
+]
