@@ -1,0 +1,14 @@
+{
+  "_comment": "Add this to your Claude Desktop config.json under 'mcpServers'",
+  "mcpServers": {
+    "atlas": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-v", "/path/to/your/data:/data",
+        "-e", "ATLAS_DB_PATH=/data/atlas.db",
+        "cargofy/atlas:latest"
+      ]
+    }
+  }
+}

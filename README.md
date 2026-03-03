@@ -33,19 +33,39 @@ Your data stays with you. Agents get the context they need.
 
 ## Quick Start
 
-```bash
-# Pull and run ATLAS locally
-docker run -d \
-  -p 3000:3000 \
-  -v ./config.yml:/app/config.yml \
-  cargofy/atlas:latest
+**Option 1: Docker (recommended)**
 
-# Or with Docker Compose
-curl -O https://raw.githubusercontent.com/cargofy/atlas/main/docker-compose.yml
-docker compose up -d
+```bash
+docker run -d \
+  -v ./config.yml:/app/config.yml \
+  -v atlas_data:/data/atlas \
+  cargofy/atlas:latest
 ```
 
-Configure your connectors in `config.yml` and ATLAS starts indexing immediately.
+**Option 2: Claude Desktop**
+
+Add to your `claude_desktop_config.json` under `mcpServers`:
+
+```json
+{
+  "atlas": {
+    "command": "docker",
+    "args": ["run", "--rm", "-i", "-v", "/your/data:/data", "cargofy/atlas:latest"]
+  }
+}
+```
+
+**Option 3: Run from source**
+
+```bash
+git clone https://github.com/cargofy/ATLAS
+cd ATLAS
+npm install
+node seed.js          # optional: load sample data
+node src/index.js     # starts MCP server on stdio
+```
+
+Configure your data sources in `config.yml` (copy from `config.example.yml`).
 
 ---
 
@@ -53,8 +73,8 @@ Configure your connectors in `config.yml` and ATLAS starts indexing immediately.
 
 | Connector | Status | Description |
 |-----------|--------|-------------|
-| Email (IMAP/Exchange) | ✅ Available | Indexes all logistics-related emails |
-| Google Drive / S3 | ✅ Available | Contracts, BOLs, rate sheets |
+| Email (IMAP/Exchange) | 🔜 v0.2 | Indexes all logistics-related emails |
+| Filesystem (JSON, CSV, PDF) | ✅ Available | Local contracts, BOLs, rate sheets |
 | REST API | ✅ Available | Connect any TMS or ERP via API |
 | SAP TM | 🔜 Coming soon | Native SAP Transportation Management |
 | Oracle TMS | 🔜 Coming soon | Oracle Transportation Management |
