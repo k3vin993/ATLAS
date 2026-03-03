@@ -1,0 +1,35 @@
+[
+  {
+    "id": "LANE-PL-DE",
+    "origin_country": "PL",
+    "origin_city": "Warsaw",
+    "destination_country": "DE",
+    "destination_city": "Berlin",
+    "distance_km": 575,
+    "avg_transit_hours": 12,
+    "modes": ["road"],
+    "notes": "High volume corridor. Peak demand: Mon-Wed."
+  },
+  {
+    "id": "LANE-UA-PL",
+    "origin_country": "UA",
+    "origin_city": "Kyiv",
+    "destination_country": "PL",
+    "destination_city": "Warsaw",
+    "distance_km": 810,
+    "avg_transit_hours": 20,
+    "modes": ["road"],
+    "notes": "Customs crossing at Dorohusk or Medyka. Allow +4h buffer."
+  },
+  {
+    "id": "LANE-DE-NL",
+    "origin_country": "DE",
+    "origin_city": "Hamburg",
+    "destination_country": "NL",
+    "destination_city": "Rotterdam",
+    "distance_km": 310,
+    "avg_transit_hours": 6,
+    "modes": ["road", "ocean"],
+    "notes": "Short-sea option via Zeebrugge. Road preferred <20t."
+  }
+]

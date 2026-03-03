@@ -1,0 +1,36 @@
+[
+  {
+    "id": "EVT-001",
+    "shipment_id": "SHP-001",
+    "type": "pickup",
+    "timestamp": "2026-03-03T08:45:00Z",
+    "location": "Warsaw, PL",
+    "lat": 52.2297,
+    "lon": 21.0122,
+    "description": "Cargo picked up. 12500kg loaded.",
+    "is_exception": false
+  },
+  {
+    "id": "EVT-002",
+    "shipment_id": "SHP-001",
+    "type": "transit",
+    "timestamp": "2026-03-03T14:30:00Z",
+    "location": "Poznan, PL",
+    "lat": 52.4064,
+    "lon": 16.9252,
+    "description": "In transit, on schedule.",
+    "is_exception": false
+  },
+  {
+    "id": "EVT-003",
+    "shipment_id": "SHP-003",
+    "type": "exception",
+    "timestamp": "2026-03-03T11:20:00Z",
+    "location": "Hamburg, DE",
+    "lat": 53.5511,
+    "lon": 9.9937,
+    "description": "Delayed at loading dock. Driver waiting 1h+.",
+    "is_exception": true,
+    "exception_code": "LOADING_DELAY"
+  }
+]

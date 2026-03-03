@@ -1,0 +1,32 @@
+[
+  {
+    "id": "TND-001",
+    "title": "Q2 2026 — PL-DE Corridor",
+    "type": "spot",
+    "status": "open",
+    "shipper_id": "PARTY-ACME",
+    "managed_by_party_id": "PARTY-3PL-FWD",
+    "origin_country": "PL",
+    "destination_country": "DE",
+    "cargo_type": "general",
+    "weight_kg": 24000,
+    "volume_m3": 86,
+    "pickup_date": "2026-03-05T07:00:00Z",
+    "deadline": "2026-03-04T18:00:00Z",
+    "notes": "Full truck. ADR not required. Tail lift needed."
+  },
+  {
+    "id": "TND-002",
+    "title": "Annual Volume — UA-PL Refrigerated",
+    "type": "volume",
+    "status": "partially_awarded",
+    "shipper_id": "PARTY-NOVA",
+    "managed_by_party_id": "PARTY-3PL-FWD",
+    "origin_country": "UA",
+    "destination_country": "PL",
+    "cargo_type": "refrigerated",
+    "required_volume": 40,
+    "frequency": "weekly",
+    "notes": "40 trucks/week. GDP required. -18°C maintained."
+  }
+]

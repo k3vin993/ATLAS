@@ -1,0 +1,8 @@
+id,carrier_id,origin_country,destination_country,mode,cargo_type,price_per_km,min_price,currency,valid_from,valid_until
+RATE-001,CARR-001,PL,DE,road,general,1.85,850,EUR,2026-01-01,2026-06-30
+RATE-002,CARR-001,PL,FR,road,general,2.10,1200,EUR,2026-01-01,2026-06-30
+RATE-003,CARR-001,UA,PL,road,general,2.30,900,EUR,2026-01-01,2026-06-30
+RATE-004,CARR-002,UA,PL,road,refrigerated,3.20,1400,EUR,2026-01-01,2026-06-30
+RATE-005,CARR-002,UA,RO,road,refrigerated,2.90,1100,EUR,2026-01-01,2026-06-30
+RATE-006,CARR-003,DE,NO,ocean,fcl,1850,,EUR,2026-01-01,2026-12-31
+RATE-007,CARR-003,DE,SE,ocean,fcl,1200,,EUR,2026-01-01,2026-12-31

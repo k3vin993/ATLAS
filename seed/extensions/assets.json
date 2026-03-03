@@ -1,0 +1,43 @@
+[
+  {
+    "id": "ASSET-TRK-001",
+    "type": "truck",
+    "plate": "WA 12345",
+    "carrier_id": "CARR-001",
+    "make": "Volvo",
+    "model": "FH16",
+    "year": 2022,
+    "capacity_kg": 24000,
+    "capacity_m3": 92,
+    "status": "available",
+    "current_location": "Warsaw, PL",
+    "certifications": ["ADR", "GDP"],
+    "notes": "Mega trailer. Temperature unit installed."
+  },
+  {
+    "id": "ASSET-TRK-002",
+    "type": "truck",
+    "plate": "WA 67890",
+    "carrier_id": "CARR-001",
+    "make": "Mercedes",
+    "model": "Actros",
+    "year": 2021,
+    "capacity_kg": 22000,
+    "capacity_m3": 86,
+    "status": "on_route",
+    "current_location": "Poznan, PL",
+    "notes": "Currently on SHP-001."
+  },
+  {
+    "id": "ASSET-REEF-001",
+    "type": "reefer_trailer",
+    "plate": "KR 11111",
+    "carrier_id": "CARR-002",
+    "capacity_kg": 20000,
+    "temp_range_min": -25,
+    "temp_range_max": 8,
+    "status": "available",
+    "current_location": "Kyiv, UA",
+    "certifications": ["GDP", "HACCP"]
+  }
+]
