@@ -1,0 +1,31 @@
+[
+  {
+    "id": "DOC-001",
+    "shipment_id": "SHP-001",
+    "type": "cmr",
+    "filename": "CMR_SHP001_2026-03-03.pdf",
+    "status": "draft",
+    "signature_status": "unsigned",
+    "issued_at": "2026-03-03T08:00:00Z",
+    "notes": "CMR issued at loading. Awaiting driver + shipper signature."
+  },
+  {
+    "id": "DOC-002",
+    "shipment_id": "SHP-002",
+    "type": "pod",
+    "filename": "POD_SHP002_2026-03-02.pdf",
+    "status": "final",
+    "signature_status": "fully_signed",
+    "issued_at": "2026-03-02T17:35:00Z",
+    "notes": "Delivery confirmed. POD signed by consignee."
+  },
+  {
+    "id": "DOC-003",
+    "shipment_id": "SHP-002",
+    "type": "invoice",
+    "filename": "INV-2026-0289.pdf",
+    "status": "final",
+    "signature_status": "not_required",
+    "issued_at": "2026-03-02T18:00:00Z"
+  }
+]

@@ -10,8 +10,8 @@
  * On next run, passes it as query param (since_param in config) to fetch only new records.
  */
 
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join, extname } from 'path';
+import { readFileSync, readdirSync, existsSync, statSync } from 'fs';
+import { join, extname, basename } from 'path';
 import { applyMapping, validateMapped, resolveEnv } from './mapper.js';
 
 export class ConnectorRunner {
@@ -181,6 +181,18 @@ export class ConnectorRunner {
         const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
         return Object.fromEntries(headers.map((h, i) => [h, vals[i] ?? '']));
       });
+    }
+
+    if (ext === 'md') {
+      // Markdown files with YAML front matter: parse front matter as a single record
+      const text = readFileSync(filepath, 'utf8');
+      const match = text.match(/^---\n([\s\S]+?)\n---/);
+      if (!match) return [];
+      try {
+        const YAML = (await import('yaml')).default;
+        const data = YAML.parse(match[1]);
+        return [data];
+      } catch { return []; }
     }
 
     if (ext === 'xlsx' || ext === 'xls') {
