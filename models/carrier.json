@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/carrier/v1",
+  "title": "ATLAS Carrier",
+  "description": "Carrier/freight company profile covering all transport modes",
+  "type": "object",
+  "required": ["id", "name", "type", "country"],
+  "properties": {
+    "id": { "type": "string", "description": "Unique carrier identifier (e.g. SCAC code, internal ID)" },
+    "name": { "type": "string", "description": "Legal company name" },
+    "trade_name": { "type": "string", "description": "DBA / trade name if different from legal" },
+    "type": {
+      "type": "string",
+      "enum": ["trucking", "shipping_line", "airline", "rail", "broker"],
+      "description": "Primary carrier type"
+    },
+    "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country of registration" },
+    "mc_number": { "type": "string", "description": "FMCSA Motor Carrier number (US trucking)" },
+    "dot_number": { "type": "string", "description": "US DOT number (US trucking)" },
+    "scac": { "type": "string", "description": "Standard Carrier Alpha Code (2-4 letters)" },
+    "iata_code": { "type": "string", "description": "IATA airline/agent code" },
+    "fleet_size": { "type": "integer", "minimum": 0, "description": "Number of owned/operated vehicles" },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["FTL", "LTL", "FCL", "LCL", "express", "intermodal", "hazmat", "temperature_controlled", "oversized", "last_mile"]
+      },
+      "description": "Services offered"
+    },
+    "lanes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lane" },
+      "description": "Primary operating corridors"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Aggregated carrier rating (0-5)"
+    },
+    "performance": { "$ref": "#/$defs/performance" },
+    "contact": { "$ref": "#/$defs/contact" },
+    "insurance": { "$ref": "#/$defs/insurance" },
+    "certifications": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ISO_9001", "ISO_14001", "AEO", "C-TPAT", "TAPA", "GDP", "IATA_CASS", "SmartWay"]
+      }
+    },
+    "active": { "type": "boolean", "default": true },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "lane": {
+      "type": "object",
+      "properties": {
+        "origin_country": { "type": "string" },
+        "destination_country": { "type": "string" },
+        "origin_region": { "type": "string" },
+        "destination_region": { "type": "string" },
+        "mode": { "type": "string", "enum": ["road", "ocean", "air", "rail", "multimodal"] }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "on_time_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "On-time delivery rate (0.0–1.0)"
+        },
+        "damage_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Cargo damage rate (0.0–1.0)"
+        },
+        "avg_delay_hours": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average delay in hours across all shipments"
+        },
+        "total_shipments": { "type": "integer", "minimum": 0 },
+        "period_months": { "type": "integer", "description": "Rolling period for stats (default 12)" }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "ops_email": { "type": "string", "format": "email" },
+        "sales_email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "website": { "type": "string", "format": "uri" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" }
+      }
+    },
+    "insurance": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "policy_number": { "type": "string" },
+        "cargo_coverage_usd": { "type": "number", "minimum": 0 },
+        "liability_coverage_usd": { "type": "number", "minimum": 0 },
+        "expiry_date": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

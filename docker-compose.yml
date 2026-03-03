@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   atlas:
+    build: .
     image: cargofy/atlas:latest
     container_name: atlas
     restart: unless-stopped

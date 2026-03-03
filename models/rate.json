@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/rate/v1",
+  "title": "ATLAS Rate",
+  "description": "Freight pricing record — spot or contract rate for a carrier on a lane",
+  "type": "object",
+  "required": ["id", "carrier_id", "lane", "mode", "currency", "base_rate", "rate_type"],
+  "properties": {
+    "id": { "type": "string", "description": "Unique rate record ID" },
+    "carrier_id": { "type": "string", "description": "Carrier ID this rate belongs to" },
+    "lane": { "$ref": "#/$defs/lane" },
+    "mode": {
+      "type": "string",
+      "enum": ["road", "ocean", "air", "rail", "multimodal"]
+    },
+    "valid_from": { "type": "string", "format": "date", "description": "Rate validity start date" },
+    "valid_to": { "type": "string", "format": "date", "description": "Rate validity end date" },
+    "currency": { "type": "string", "description": "ISO 4217 currency code (e.g. USD, EUR)" },
+    "base_rate": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Base freight rate (unit depends on rate_basis)"
+    },
+    "rate_basis": {
+      "type": "string",
+      "enum": ["per_shipment", "per_kg", "per_cbm", "per_container", "per_truck", "per_km"],
+      "description": "Unit basis for base_rate"
+    },
+    "fuel_surcharge": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Fuel surcharge — absolute value in currency or percentage (see fuel_surcharge_type)"
+    },
+    "fuel_surcharge_type": {
+      "type": "string",
+      "enum": ["absolute", "percent"],
+      "default": "percent"
+    },
+    "additional_fees": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fee" },
+      "description": "Additional surcharges: BAF, CAF, THC, pick-up, delivery, etc."
+    },
+    "rate_type": {
+      "type": "string",
+      "enum": ["spot", "contract", "tender", "spot_quote"],
+      "description": "Rate agreement type"
+    },
+    "min_weight_kg": { "type": "number", "minimum": 0, "description": "Minimum chargeable weight" },
+    "max_weight_kg": { "type": "number", "minimum": 0, "description": "Maximum weight covered by this rate" },
+    "min_volume_m3": { "type": "number", "minimum": 0 },
+    "max_volume_m3": { "type": "number", "minimum": 0 },
+    "service_level": {
+      "type": "string",
+      "enum": ["economy", "standard", "express", "priority"],
+      "description": "Service level / transit time option"
+    },
+    "equipment_type": {
+      "type": "string",
+      "description": "e.g. 40HC, 20GP, 53ft, reefer"
+    },
+    "notes": { "type": "string" },
+    "source": { "type": "string", "description": "Where rate came from: manual, API, email, tender" },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "lane": {
+      "type": "object",
+      "required": ["origin", "destination"],
+      "properties": {
+        "origin": {
+          "type": "object",
+          "properties": {
+            "locode": { "type": "string" },
+            "city": { "type": "string" },
+            "country": { "type": "string" },
+            "region": { "type": "string" }
+          }
+        },
+        "destination": {
+          "type": "object",
+          "properties": {
+            "locode": { "type": "string" },
+            "city": { "type": "string" },
+            "country": { "type": "string" },
+            "region": { "type": "string" }
+          }
+        }
+      }
+    },
+    "fee": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Fee name (e.g. BAF, THC, pick-up)" },
+        "amount": { "type": "number", "minimum": 0 },
+        "type": { "type": "string", "enum": ["absolute", "percent"] },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "amount"]
+    }
+  }
+}

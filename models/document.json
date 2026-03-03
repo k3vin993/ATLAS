@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/document/v1",
+  "title": "ATLAS Document",
+  "description": "Logistics document model — BOL, CMR, AWB, invoice, customs declaration, POD",
+  "type": "object",
+  "required": ["id", "type", "shipment_id", "status"],
+  "properties": {
+    "id": { "type": "string", "description": "Unique document identifier" },
+    "type": {
+      "type": "string",
+      "enum": ["bol", "cmr", "awb", "invoice", "customs_export", "customs_import", "pod", "packing_list", "certificate_of_origin", "dangerous_goods", "other"],
+      "description": "Document type"
+    },
+    "number": { "type": "string", "description": "Document number / reference (e.g. BOL#, invoice#)" },
+    "shipment_id": { "type": "string", "description": "Associated shipment ID" },
+    "issued_date": { "type": "string", "format": "date", "description": "Date of issuance" },
+    "expiry_date": { "type": "string", "format": "date", "description": "Expiry date (for customs, permits)" },
+    "parties": { "$ref": "#/$defs/parties" },
+    "goods_description": { "type": "string", "description": "Description of goods covered by this document" },
+    "weight": {
+      "type": "object",
+      "properties": {
+        "gross_kg": { "type": "number", "minimum": 0 },
+        "net_kg": { "type": "number", "minimum": 0 }
+      }
+    },
+    "value": { "type": "number", "minimum": 0, "description": "Declared goods value" },
+    "currency": { "type": "string", "description": "ISO 4217 currency code (e.g. USD, EUR)" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "issued", "signed", "rejected", "cancelled", "amended"],
+      "description": "Current document status"
+    },
+    "file_url": { "type": "string", "format": "uri", "description": "URL or path to the document file" },
+    "file_hash": { "type": "string", "description": "SHA-256 hash for integrity verification" },
+    "notes": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "party": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2" },
+        "postal_code": { "type": "string" },
+        "vat_number": { "type": "string" },
+        "eori_number": { "type": "string", "description": "EU Economic Operator Registration and Identification" },
+        "contact_name": { "type": "string" },
+        "contact_email": { "type": "string", "format": "email" },
+        "contact_phone": { "type": "string" }
+      }
+    },
+    "parties": {
+      "type": "object",
+      "properties": {
+        "shipper": { "$ref": "#/$defs/party" },
+        "consignee": { "$ref": "#/$defs/party" },
+        "carrier": { "$ref": "#/$defs/party" },
+        "notify_party": { "$ref": "#/$defs/party" },
+        "customs_broker": { "$ref": "#/$defs/party" },
+        "freight_forwarder": { "$ref": "#/$defs/party" }
+      }
+    }
+  }
+}

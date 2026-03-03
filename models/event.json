@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/event/v1",
+  "title": "ATLAS Event",
+  "description": "Shipment tracking event — milestone or exception in the logistics chain",
+  "type": "object",
+  "required": ["id", "shipment_id", "timestamp", "type"],
+  "properties": {
+    "id": { "type": "string", "description": "Unique event identifier" },
+    "shipment_id": { "type": "string", "description": "Associated shipment ID" },
+    "timestamp": { "type": "string", "format": "date-time", "description": "When the event occurred (UTC)" },
+    "received_at": { "type": "string", "format": "date-time", "description": "When ATLAS received/processed this event" },
+    "type": {
+      "type": "string",
+      "enum": [
+        "pickup",
+        "departure",
+        "in_transit",
+        "arrival",
+        "customs_hold",
+        "customs_cleared",
+        "out_for_delivery",
+        "delivery",
+        "delivery_attempt",
+        "exception",
+        "delay",
+        "damage",
+        "loss",
+        "return"
+      ],
+      "description": "Standardized event type"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "locode": { "type": "string", "description": "UN/LOCODE" },
+        "city": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2" },
+        "facility": { "type": "string", "description": "Port, depot, terminal name" },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        }
+      }
+    },
+    "description": { "type": "string", "description": "Human-readable event description" },
+    "source": {
+      "type": "string",
+      "enum": ["carrier", "tms", "manual", "tracking_api", "email", "edi", "port_authority"],
+      "description": "Where this event originated"
+    },
+    "is_exception": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this event represents a problem requiring attention"
+    },
+    "exception_details": {
+      "type": "object",
+      "properties": {
+        "reason_code": { "type": "string" },
+        "reason_description": { "type": "string" },
+        "estimated_delay_hours": { "type": "number", "minimum": 0 },
+        "resolution_required": { "type": "boolean" },
+        "resolved": { "type": "boolean" },
+        "resolved_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "vessel_name": { "type": "string", "description": "For ocean: vessel name" },
+    "voyage_number": { "type": "string", "description": "For ocean: voyage/voyage number" },
+    "flight_number": { "type": "string", "description": "For air: flight number" },
+    "raw_data": {
+      "type": "object",
+      "description": "Original raw event payload from source system (preserved for debugging)"
+    }
+  }
+}

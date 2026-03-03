@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/route/v1",
+  "title": "ATLAS Route",
+  "description": "Trade lane / logistics corridor with operational parameters",
+  "type": "object",
+  "required": ["id", "origin", "destination", "mode"],
+  "properties": {
+    "id": { "type": "string", "description": "Unique route identifier" },
+    "origin": { "$ref": "#/$defs/endpoint" },
+    "destination": { "$ref": "#/$defs/endpoint" },
+    "mode": {
+      "type": "string",
+      "enum": ["road", "ocean", "air", "rail", "multimodal"],
+      "description": "Primary transport mode"
+    },
+    "distance_km": { "type": "number", "minimum": 0, "description": "Total distance in kilometers" },
+    "transit_days": {
+      "type": "object",
+      "properties": {
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 },
+        "typical": { "type": "number", "minimum": 0 }
+      },
+      "description": "Transit time range in calendar days"
+    },
+    "carriers_available": {
+      "type": "array",
+      "items": { "type": "string", "description": "Carrier ID" },
+      "description": "Carrier IDs operating on this route"
+    },
+    "avg_rate_per_km": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average all-in rate per kilometer (USD)"
+    },
+    "seasonal_factors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/seasonal_factor" },
+      "description": "Monthly or seasonal rate/capacity adjustments"
+    },
+    "restrictions": { "$ref": "#/$defs/restrictions" },
+    "waypoints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/endpoint" },
+      "description": "Intermediate stops or transhipment hubs"
+    },
+    "active": { "type": "boolean", "default": true },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "locode": { "type": "string", "description": "UN/LOCODE (e.g. USNYC, DEHAM)" },
+        "city": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2" },
+        "facility_type": {
+          "type": "string",
+          "enum": ["port", "airport", "depot", "warehouse", "address", "border_crossing"]
+        },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        }
+      }
+    },
+    "seasonal_factor": {
+      "type": "object",
+      "properties": {
+        "month": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "rate_multiplier": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Rate multiplier (1.0 = normal, 1.3 = 30% peak surcharge)"
+        },
+        "capacity_level": {
+          "type": "string",
+          "enum": ["tight", "normal", "loose"],
+          "description": "Typical capacity availability"
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "restrictions": {
+      "type": "object",
+      "properties": {
+        "max_weight_kg": { "type": "number", "minimum": 0 },
+        "max_length_m": { "type": "number", "minimum": 0 },
+        "max_height_m": { "type": "number", "minimum": 0 },
+        "hazmat_allowed": { "type": "boolean" },
+        "temperature_controlled_available": { "type": "boolean" },
+        "requires_customs_broker": { "type": "boolean" },
+        "special_permits": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
