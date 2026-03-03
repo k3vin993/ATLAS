@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://atlas-standard.org/models/rate/v1",
+  "$id": "https://atlasmcp.org/models/rate/v1",
   "title": "ATLAS Rate",
   "description": "Freight pricing record — spot or contract rate for a carrier on a lane",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://atlas-standard.org/models/event/v1",
+  "$id": "https://atlasmcp.org/models/event/v1",
   "title": "ATLAS Event",
   "description": "Shipment tracking event — milestone or exception in the logistics chain",
   "type": "object",

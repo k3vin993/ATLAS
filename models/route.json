@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://atlas-standard.org/models/route/v1",
+  "$id": "https://atlasmcp.org/models/route/v1",
   "title": "ATLAS Route",
   "description": "Trade lane / logistics corridor with operational parameters",
   "type": "object",

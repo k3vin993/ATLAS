@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://atlas-standard.org/models/shipment/v1",
+  "$id": "https://atlasmcp.org/models/shipment/v1",
   "title": "ATLAS Shipment",
   "description": "Universal logistics shipment model covering all transport modes",
   "type": "object",

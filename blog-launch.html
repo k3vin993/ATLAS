@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introducing ATLAS — ATLASMCP</title>
+  <meta name="description" content="We're open-sourcing the MCP server we built for enterprise logistics. Your data never leaves your infrastructure." />
+  <meta property="og:title" content="Introducing ATLAS — MCP Server for Logistics" />
+  <meta property="og:description" content="We're open-sourcing the MCP server we built for enterprise logistics." />
+  <meta property="og:url" content="https://atlasmcp.org/blog/introducing-atlas" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f; --bg2: #111118; --border: #1e1e2e;
+      --text: #e8e8f0; --muted: #6b6b8a; --accent: #4f8ef7;
+      --green: #22c55e; --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(10,10,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-logo { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #fff !important; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 500; }
+
+    .post-container { max-width: 720px; margin: 0 auto; padding: 8rem 2rem 5rem; }
+
+    .post-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .post-date { color: var(--muted); font-size: 0.88rem; }
+    .post-tag { background: rgba(79,142,247,0.12); border: 1px solid rgba(79,142,247,0.25); color: var(--accent); font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.04em; }
+
+    h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1.5rem; }
+    .lead { font-size: 1.15rem; color: var(--muted); margin-bottom: 3rem; line-height: 1.75; border-bottom: 1px solid var(--border); padding-bottom: 2rem; }
+
+    .post-body h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin: 2.5rem 0 1rem; }
+    .post-body p { color: #c8c8d8; margin-bottom: 1.25rem; line-height: 1.8; }
+    .post-body strong { color: var(--text); }
+    .post-body ul { margin: 1rem 0 1.25rem 1.25rem; color: #c8c8d8; }
+    .post-body li { margin-bottom: 0.4rem; line-height: 1.7; }
+
+    .callout { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .callout p { margin: 0; color: var(--muted); font-style: italic; }
+
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; font-family: var(--mono); font-size: 0.85rem; line-height: 1.8; overflow-x: auto; margin: 1.5rem 0; color: var(--muted); }
+    pre .cmd { color: var(--accent); }
+    pre .out { color: var(--green); }
+
+    .author-box { display: flex; align-items: center; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .author-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
+    .author-name { font-weight: 600; margin-bottom: 0.15rem; }
+    .author-title { color: var(--muted); font-size: 0.88rem; }
+
+    .post-cta { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem; }
+    .post-cta h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .post-cta p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #3a7de8; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">ATLAS<span>MCP</span></a>
+  <ul class="nav-links">
+    <li><a href="/#tools">MCP Tools</a></li>
+    <li><a href="/#models">Data Models</a></li>
+    <li><a href="https://github.com/cargofy/ATLAS" target="_blank" rel="noopener">Docs</a></li>
+    <li><a href="https://github.com/cargofy/ATLAS" target="_blank" rel="noopener" class="nav-cta">GitHub →</a></li>
+  </ul>
+</nav>
+
+<div class="post-container">
+
+  <div class="post-meta">
+    <span class="post-tag">LAUNCH</span>
+    <span class="post-date">March 3, 2026</span>
+  </div>
+
+  <h1>Introducing ATLAS: the open MCP server for logistics</h1>
+
+  <p class="lead">
+    Enterprise logistics companies have years of operational data — carrier relationships, pricing history, client contracts. We built an open-source MCP server that lets AI agents use all of it, without any of it leaving the company's infrastructure.
+  </p>
+
+  <div class="post-body">
+
+    <h2>The problem we kept hitting</h2>
+
+    <p>
+      Every time we talked to a large logistics operator about AI, the conversation hit the same wall: <strong>"We can't share our data with anyone."</strong>
+    </p>
+
+    <p>
+      They're not wrong. A freight forwarder's carrier network, their negotiated rates, their client relationships — that's their entire competitive advantage. Sending it to a third-party SaaS is a non-starter for their legal team. For their compliance team. Often for their clients.
+    </p>
+
+    <p>
+      For years, the only way to get these companies on board was through the soft skills of our sales team — building trust conversation by conversation. The product couldn't solve this on its own.
+    </p>
+
+    <h2>What we built</h2>
+
+    <p>
+      ATLAS is an open-source MCP server that runs entirely inside the client's security perimeter. It connects to their existing systems — emails, TMS, ERP, transport exchanges like Trans.eu and Timocom — and indexes everything locally. The client controls exactly what gets indexed. The data never moves.
+    </p>
+
+    <div class="callout">
+      <p>"Your data stays with you. AI agents get the context they need." That's the whole idea.</p>
+    </div>
+
+    <p>
+      Our AI agents connect to the client's ATLAS instance through a standard MCP protocol. They get shipment history, carrier performance, rate data, document context. They answer questions and take actions from a position of real knowledge — the company's own knowledge.
+    </p>
+
+    <h2>What's in v0.1</h2>
+
+    <ul>
+      <li>MCP server with 5 tools: <code>query</code>, <code>get_shipment</code>, <code>search_carriers</code>, <code>get_rate_history</code>, <code>list_documents</code></li>
+      <li>6 logistics-native data models: Shipment, Carrier, Route, Document, Rate, Event</li>
+      <li>Filesystem connector (JSON, CSV, PDF) and REST API connector</li>
+      <li>SQLite storage — all local, nothing egresses</li>
+      <li>Docker support — one command to run</li>
+    </ul>
+
+    <pre><span class="cmd">$</span> docker run -d \
+  -v ./config.yml:/app/config.yml \
+  cargofy/atlas:latest
+
+<span class="out">✓ ATLAS MCP server running on stdio
+✓ 5 tools available
+✓ 6 data models loaded</span></pre>
+
+    <h2>Why open source</h2>
+
+    <p>
+      We're building Cargofy as a platform. We want AI agents to work with every logistics company — not just those willing to hand over their data to us. ATLAS is how we make that possible.
+    </p>
+
+    <p>
+      But more than that: logistics needs a standard here. Right now every company trying to add AI to freight operations is solving the same data problem from scratch. ATLAS is our attempt to define that standard in the open, so the whole industry can build on it.
+    </p>
+
+    <p>
+      We open-sourced it under Apache 2.0. Use it, fork it, build connectors for it. If you're working on logistics AI, <strong>this is your infrastructure too.</strong>
+    </p>
+
+    <h2>What's next</h2>
+
+    <p>
+      v0.2 brings real email ingestion (IMAP/Exchange), local vector embeddings via Ollama for semantic search, and a PostgreSQL storage option for production scale.
+    </p>
+
+    <p>
+      v0.3 targets the major enterprise platforms: SAP TM, Oracle TMS, Transporeon, project44.
+    </p>
+
+    <p>
+      The long-term goal is a certified connectors program — where TMS vendors self-certify ATLAS compatibility, and any logistics AI agent can query any ATLAS-compatible system through a single standard. That's what "AI Transport Logistics Agent Standard" actually means.
+    </p>
+
+  </div>
+
+  <div class="author-box">
+    <div class="author-avatar">AK</div>
+    <div>
+      <div class="author-name">Alex Kovalchuk</div>
+      <div class="author-title">CTO, Cargofy</div>
+    </div>
+  </div>
+
+  <div class="post-cta">
+    <h3>Star ATLAS on GitHub</h3>
+    <p>Apache 2.0. Self-hosted. Contributions welcome.</p>
+    <a href="https://github.com/cargofy/ATLAS" target="_blank" rel="noopener" class="btn btn-primary">
+      ★ github.com/cargofy/ATLAS
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Built by <a href="https://cargofy.com" target="_blank" rel="noopener">Cargofy</a> · <a href="https://github.com/cargofy/ATLAS" target="_blank" rel="noopener">GitHub</a> · Apache 2.0</p>
+</footer>
+
+</body>
+</html>
