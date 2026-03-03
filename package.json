@@ -1,14 +1,16 @@
 {
   "name": "atlas-mcp",
   "version": "0.1.0",
-  "description": "ATLAS — AI Transport Logistics Agent Standard. MCP server for logistics companies.",
+  "description": "ATLAS \u2014 AI Transport Logistics Agent Standard. MCP server for logistics companies.",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "node src/index.js",
     "start": "node src/index.js",
     "test": "node --test src/__tests__/*.test.js",
-    "validate-models": "node src/validate-models.js"
+    "validate-models": "node src/validate-models.js",
+    "start:ui": "node src/ui-server.js",
+    "start:all": "node -e \"import('./src/ui-server.js').then(m=>m.startWebUI(new (require('./src/atlas.js').Atlas)(), 3000)); import('./src/index.js')\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -24,7 +26,14 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "keywords": ["mcp", "logistics", "freight", "transportation", "atlas", "ai-agent"],
+  "keywords": [
+    "mcp",
+    "logistics",
+    "freight",
+    "transportation",
+    "atlas",
+    "ai-agent"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/cargofy/ATLAS.git"

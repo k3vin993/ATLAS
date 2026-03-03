@@ -27,4 +27,6 @@ EXPOSE 3000
 # Health check via HTTP (add HTTP health endpoint in v0.2)
 # HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:3000/health || exit 1
 
-CMD ["node", "src/index.js"]
+# Default: web UI on port 3000
+# For MCP stdio: docker run ... node src/index.js
+CMD ["node", "src/ui-server.js"]
