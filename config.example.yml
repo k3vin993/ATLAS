@@ -1,0 +1,56 @@
+atlas:
+  name: "ATLAS @ Your Company"
+  port: 3000
+  log_level: info
+
+# Agent authentication — which agents can query this instance
+auth:
+  tokens:
+    - name: "Cargofy Platform"
+      token: "your-secret-token-here"
+      permissions: ["read", "query"]
+
+# Connectors — connect your data sources
+connectors:
+
+  email:
+    enabled: true
+    type: imap  # imap | exchange | gmail
+    host: mail.yourcompany.com
+    port: 993
+    ssl: true
+    username: logistics@yourcompany.com
+    password: "${EMAIL_PASSWORD}"
+    folders: ["INBOX", "Sent", "Logistics"]
+    sync_days_back: 365
+
+  filesystem:
+    enabled: true
+    paths:
+      - /data/contracts
+      - /data/rate-sheets
+      - /data/bol
+    file_types: [".pdf", ".docx", ".xlsx", ".csv"]
+
+  api:
+    enabled: false
+    endpoints:
+      - name: "TMS"
+        url: "https://tms.yourcompany.com/api/v1"
+        auth_header: "Authorization: Bearer ${TMS_API_KEY}"
+        resources: ["shipments", "carriers", "routes"]
+
+# Storage — all local, nothing leaves your infrastructure
+storage:
+  vector_store: local  # local | postgres
+  database: sqlite     # sqlite | postgres
+  data_dir: /data/atlas
+
+# Logistics data models to extract and index
+models:
+  shipments: true
+  carriers: true
+  routes: true
+  documents: true
+  rates: true
+  events: true

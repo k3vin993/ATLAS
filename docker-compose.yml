@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  atlas:
+    image: cargofy/atlas:latest
+    container_name: atlas
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config.yml:/app/config.yml:ro
+      - atlas_data:/data/atlas
+      # Mount your data directories (read-only)
+      # - /path/to/your/contracts:/data/contracts:ro
+      # - /path/to/your/documents:/data/documents:ro
+    environment:
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - TMS_API_KEY=${TMS_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  atlas_data:
+    driver: local

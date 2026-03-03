@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas-standard.org/models/shipment/v1",
+  "title": "ATLAS Shipment",
+  "description": "Universal logistics shipment model covering all transport modes",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "reference": { "type": "string", "description": "Internal reference number" },
+    "external_reference": { "type": "string", "description": "Customer or partner reference" },
+    "mode": {
+      "type": "string",
+      "enum": ["road", "ocean", "air", "rail", "multimodal"],
+      "description": "Transport mode"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "booked", "in_transit", "customs", "delivered", "exception", "cancelled"]
+    },
+    "origin": { "$ref": "#/$defs/location" },
+    "destination": { "$ref": "#/$defs/location" },
+    "carrier": { "$ref": "#/$defs/carrier_ref" },
+    "cargo": { "$ref": "#/$defs/cargo" },
+    "dates": {
+      "type": "object",
+      "properties": {
+        "pickup_planned": { "type": "string", "format": "date-time" },
+        "pickup_actual": { "type": "string", "format": "date-time" },
+        "delivery_planned": { "type": "string", "format": "date-time" },
+        "delivery_actual": { "type": "string", "format": "date-time" },
+        "etd": { "type": "string", "format": "date-time", "description": "Estimated time of departure" },
+        "eta": { "type": "string", "format": "date-time", "description": "Estimated time of arrival" }
+      }
+    },
+    "financials": {
+      "type": "object",
+      "properties": {
+        "currency": { "type": "string" },
+        "agreed_rate": { "type": "number" },
+        "final_cost": { "type": "number" },
+        "margin": { "type": "number" }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/document_ref" }
+    },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/event" }
+    },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2" },
+        "postal_code": { "type": "string" },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        }
+      }
+    },
+    "carrier_ref": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["trucking", "shipping_line", "airline", "rail", "broker"] },
+        "tracking_number": { "type": "string" }
+      }
+    },
+    "cargo": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "weight_kg": { "type": "number" },
+        "volume_m3": { "type": "number" },
+        "units": { "type": "integer" },
+        "unit_type": { "type": "string", "enum": ["pallet", "box", "container", "bulk", "other"] },
+        "dangerous_goods": { "type": "boolean" },
+        "temperature_controlled": { "type": "boolean" },
+        "temperature_range": {
+          "type": "object",
+          "properties": {
+            "min_celsius": { "type": "number" },
+            "max_celsius": { "type": "number" }
+          }
+        }
+      }
+    },
+    "document_ref": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["bol", "cmr", "awb", "invoice", "customs", "pod", "other"] },
+        "number": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "type": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}
