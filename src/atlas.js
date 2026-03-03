@@ -10,7 +10,7 @@ import YAML from "yaml";
 import Database from "better-sqlite3";
 import {
   CORE_SCHEMA, EXTENSION_SCHEMA, PARTY_SCHEMA,
-  MARKETPLACE_SCHEMA, WORKFLOW_SCHEMA, MODEL_REGISTRY, MODEL_ALIASES
+  MARKETPLACE_SCHEMA, WORKFLOW_SCHEMA, ISSUE_SCHEMA, MODEL_REGISTRY, MODEL_ALIASES
 } from "./models.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -169,6 +169,7 @@ export class Atlas {
       ...PARTY_SCHEMA,
       ...MARKETPLACE_SCHEMA,
       ...WORKFLOW_SCHEMA,
+      ...ISSUE_SCHEMA,
     };
 
     // Map singular config key → plural table name
@@ -178,6 +179,7 @@ export class Atlas {
       tender_award: 'tender_awards', dispatch: 'dispatches',
       leg: 'legs', customs_entry: 'customs_entries',
       managed_relationship: 'managed_relationships',
+      issue: 'issues',
       load_listing: 'load_listings', asset_availability: 'asset_availability',
       freight_offer: 'freight_offers',
       review: 'reviews', market_signal: 'market_signals', claim: 'claims',
@@ -571,6 +573,22 @@ export class Atlas {
       } catch {}
     }
     return status;
+  }
+
+  // ─── Issues ──────────────────────────────────────────────────────────────
+
+  getActiveIssues({ type, severity, requires_replanning, limit = 50 } = {}) {
+    if (!this._enabledModels.has('issues')) return { issues: [], total: 0 };
+    const conds = ["status NOT IN ('resolved','cancelled')"];
+    const params = [];
+    if (type)     { conds.push("type = ?");     params.push(type); }
+    if (severity) { conds.push("severity = ?"); params.push(severity); }
+    if (requires_replanning) { conds.push("requires_replanning = 1"); }
+    const where = ` WHERE ${conds.join(" AND ")}`;
+    const rows = this.db
+      .prepare(`SELECT data FROM issues${where} ORDER BY reported_at DESC LIMIT ?`)
+      .all(...params, limit);
+    return { issues: rows.map(r => JSON.parse(r.data)), total: rows.length };
   }
 
   // ─── Closure checklist ───────────────────────────────────────────────────
