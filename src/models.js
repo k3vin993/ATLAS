@@ -356,3 +356,96 @@ export const TENDER_STATUS = [
   'draft', 'open', 'collecting_quotes',
   'awarded', 'partially_awarded', 'active', 'closed', 'cancelled',
 ];
+
+// ─── Marketplace models — UC-6: Asset-based carrier / load matching ──────────
+// Covers: load board integration (DAT, Trans.eu, TimoCom, email, phone),
+// asset availability tracking, offer lifecycle management.
+// Both sides: carrier searching for loads, shipper posting loads.
+
+export const MARKETPLACE_SCHEMA = {
+
+  // LoadListing = any incoming load opportunity from any source
+  // Source can be: dat, trans_eu, timocom, trucknet, email, phone, manual, api
+  load_listings: `
+    CREATE TABLE IF NOT EXISTS load_listings (
+      id TEXT PRIMARY KEY,
+      source TEXT,
+      external_id TEXT,
+      shipper_party_id TEXT,
+      origin_country TEXT,
+      origin_city TEXT,
+      destination_country TEXT,
+      destination_city TEXT,
+      cargo_type TEXT,
+      weight_kg REAL,
+      volume_m3 REAL,
+      available_from TEXT,
+      rate_offered REAL,
+      currency TEXT,
+      status TEXT,
+      expires_at TEXT,
+      fetched_at TEXT,
+      data TEXT
+    )`,
+
+  // AssetAvailability = when/where a truck or trailer will be free
+  // Auto-updated when a TransportOrder is completed or created
+  asset_availability: `
+    CREATE TABLE IF NOT EXISTS asset_availability (
+      id TEXT PRIMARY KEY,
+      asset_id TEXT,
+      available_from TEXT,
+      available_until TEXT,
+      location_country TEXT,
+      location_city TEXT,
+      capacity_kg REAL,
+      capacity_m3 REAL,
+      notes TEXT,
+      data TEXT
+    )`,
+
+  // FreightOffer = carrier's quoted rate on a specific LoadListing
+  // Status flow: draft → submitted → accepted | rejected | expired
+  freight_offers: `
+    CREATE TABLE IF NOT EXISTS freight_offers (
+      id TEXT PRIMARY KEY,
+      listing_id TEXT,
+      asset_id TEXT,
+      driver_id TEXT,
+      offered_rate REAL,
+      currency TEXT,
+      status TEXT,
+      submitted_at TEXT,
+      valid_until TEXT,
+      response_at TEXT,
+      data TEXT
+    )`,
+};
+
+// Load sources — all channels a carrier monitors for loads
+export const LOAD_SOURCES = [
+  'dat',       // DAT Solutions (US/Canada load board)
+  'trans_eu',  // Trans.eu (European freight exchange)
+  'timocom',   // TimoCom (European, strong in DACH)
+  'trucknet',  // Trucknet (Eastern Europe)
+  'cargolist', // Cargolist
+  'email',     // IMAP connector — parsed inbound load requests
+  'phone',     // Manual entry from phone call
+  'whatsapp',  // WhatsApp message (manual or bot-parsed)
+  'api',       // Direct API from shipper
+  'manual',    // Agent manually entered
+];
+
+// LoadListing status flow
+export const LISTING_STATUS = [
+  'new',      // just fetched, not yet evaluated
+  'reviewed', // agent looked at it
+  'quoted',   // FreightOffer submitted
+  'won',      // offer accepted by shipper
+  'lost',     // shipper chose competitor
+  'expired',  // load no longer available
+  'skipped',  // not relevant (wrong route, weight, etc.)
+];
+
+// FreightOffer status flow
+export const OFFER_STATUS = ['draft', 'submitted', 'accepted', 'rejected', 'expired', 'withdrawn'];
