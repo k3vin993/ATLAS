@@ -26,4 +26,5 @@ export const api = {
   }),
   /** POST with FormData (multipart) — no Content-Type header (browser sets boundary). */
   postForm: (path, formData) => request(path, { method: 'POST', body: formData }),
+  del: (path) => request(path, { method: 'DELETE' }),
 };

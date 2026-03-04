@@ -3,8 +3,8 @@
  * Universal logistics MCP server — data layer only.
  * No actions, no decisions, no external communication.
  */
-import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync, statSync, unlinkSync } from "fs";
+import { join, dirname, resolve, relative } from "path";
 import { fileURLToPath } from "url";
 import YAML from "yaml";
 import Database from "better-sqlite3";
@@ -14,6 +14,7 @@ import {
 } from "./models.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const KB_ROOT = join(__dirname, '..', 'knowledge');
 
 export class Atlas {
   constructor() {
@@ -767,6 +768,77 @@ export class Atlas {
     }
   }
 
+  // ─── Knowledge Base ──────────────────────────────────────────────────────
+
+  _resolveKbPath(relPath) {
+    const cleaned = (relPath ?? '').replace(/\\/g, '/').replace(/^\/+/, '');
+    const resolved = resolve(KB_ROOT, cleaned);
+    if (!resolved.startsWith(KB_ROOT)) throw new Error('Path traversal not allowed');
+    return resolved;
+  }
+
+  getKnowledgeTree(subpath) {
+    const root = subpath ? this._resolveKbPath(subpath) : KB_ROOT;
+    if (!existsSync(root)) return [];
+    const scan = (dir) => {
+      const entries = [];
+      for (const name of readdirSync(dir)) {
+        const full = join(dir, name);
+        const stat = statSync(full);
+        if (stat.isDirectory()) {
+          entries.push({ name, path: relative(KB_ROOT, full), type: 'dir', children: scan(full) });
+        } else if (name.endsWith('.md')) {
+          entries.push({ name, path: relative(KB_ROOT, full), type: 'file' });
+        }
+      }
+      entries.sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === 'dir' ? -1 : 1));
+      return entries;
+    };
+    return scan(root);
+  }
+
+  readKnowledgeFile(relPath) {
+    const abs = this._resolveKbPath(relPath);
+    if (!existsSync(abs)) throw new Error(`File not found: ${relPath}`);
+    const stat = statSync(abs);
+    return { path: relPath, content: readFileSync(abs, 'utf8'), modified: stat.mtime.toISOString() };
+  }
+
+  writeKnowledgeFile(relPath, content) {
+    let p = relPath;
+    if (!p.endsWith('.md')) p += '.md';
+    const abs = this._resolveKbPath(p);
+    mkdirSync(dirname(abs), { recursive: true });
+    writeFileSync(abs, content, 'utf8');
+    return { path: p, ok: true };
+  }
+
+  deleteKnowledgeFile(relPath) {
+    const abs = this._resolveKbPath(relPath);
+    if (!existsSync(abs)) throw new Error(`File not found: ${relPath}`);
+    unlinkSync(abs);
+    return { path: relPath, ok: true };
+  }
+
+  createKnowledgeFolder(relPath) {
+    const abs = this._resolveKbPath(relPath);
+    mkdirSync(abs, { recursive: true });
+    return { path: relPath, ok: true };
+  }
+
+  getKnowledgeIndex() {
+    if (!existsSync(KB_ROOT)) return [];
+    const paths = [];
+    const walk = (dir) => {
+      for (const name of readdirSync(dir)) {
+        const full = join(dir, name);
+        if (statSync(full).isDirectory()) walk(full);
+        else if (name.endsWith('.md')) paths.push(relative(KB_ROOT, full));
+      }
+    };
+    walk(KB_ROOT);
+    return paths.sort();
+  }
 }
 
 export default Atlas;

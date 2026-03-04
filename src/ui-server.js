@@ -212,7 +212,7 @@ const httpServer = createServer(async (req, res) => {
 
   const cors = () => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   };
 
@@ -632,6 +632,57 @@ const httpServer = createServer(async (req, res) => {
         const { retention_days } = body ? JSON.parse(body) : {};
         const deleted = atlas.pruneOldRecords(retention_days);
         json({ ok: true, deleted, timestamp: new Date().toISOString() });
+      } catch (e) { json({ error: e.message }, 400); }
+    });
+    return;
+  }
+
+  // ── Knowledge Base endpoints ──────────────────────────────────────────────────
+
+  if (path === '/api/kb/tree' && req.method === 'GET') {
+    try {
+      const sub = url.searchParams.get('sub') || '';
+      return json({ tree: atlas.getKnowledgeTree(sub) });
+    } catch (e) { return json({ error: e.message }, 400); }
+  }
+
+  if (path === '/api/kb/file' && req.method === 'GET') {
+    try {
+      const p = url.searchParams.get('path');
+      if (!p) return json({ error: 'path query param required' }, 400);
+      return json(atlas.readKnowledgeFile(p));
+    } catch (e) { return json({ error: e.message }, 404); }
+  }
+
+  if (path === '/api/kb/file' && req.method === 'POST') {
+    let body = '';
+    req.on('data', d => body += d);
+    req.on('end', () => {
+      try {
+        const { path: p, content } = JSON.parse(body);
+        if (!p) return json({ error: 'path is required' }, 400);
+        json(atlas.writeKnowledgeFile(p, content ?? ''));
+      } catch (e) { json({ error: e.message }, 400); }
+    });
+    return;
+  }
+
+  if (path === '/api/kb/file' && req.method === 'DELETE') {
+    try {
+      const p = url.searchParams.get('path');
+      if (!p) return json({ error: 'path query param required' }, 400);
+      return json(atlas.deleteKnowledgeFile(p));
+    } catch (e) { return json({ error: e.message }, 400); }
+  }
+
+  if (path === '/api/kb/folder' && req.method === 'POST') {
+    let body = '';
+    req.on('data', d => body += d);
+    req.on('end', () => {
+      try {
+        const { path: p } = JSON.parse(body);
+        if (!p) return json({ error: 'path is required' }, 400);
+        json(atlas.createKnowledgeFolder(p));
       } catch (e) { json({ error: e.message }, 400); }
     });
     return;

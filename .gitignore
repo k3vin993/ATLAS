@@ -10,3 +10,5 @@ dist/
 atlas.db-shm
 atlas.db-wal
 settings.local.json
+knowledge/*
+!.gitkeep

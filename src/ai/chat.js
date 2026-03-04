@@ -137,6 +137,35 @@ const TOOLS = [
     input_schema: { type: 'object', properties: {} },
   },
   {
+    name: 'read_knowledge',
+    description: 'Read a file from the knowledge base by path.',
+    input_schema: {
+      type: 'object',
+      properties: { path: { type: 'string', description: 'Relative path to .md file in knowledge base' } },
+      required: ['path'],
+    },
+  },
+  {
+    name: 'save_knowledge',
+    description: 'Create or update a markdown file in the knowledge base.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: 'Relative path (auto-appends .md)' },
+        content: { type: 'string', description: 'Markdown content to write' },
+      },
+      required: ['path', 'content'],
+    },
+  },
+  {
+    name: 'list_knowledge',
+    description: 'List files and folders in the knowledge base, optionally scoped to a subfolder.',
+    input_schema: {
+      type: 'object',
+      properties: { folder: { type: 'string', description: 'Subfolder path (optional, defaults to root)' } },
+    },
+  },
+  {
     name: 'get_sla_violations',
     description: 'Get SLA violations, optionally filtered by mode or country.',
     input_schema: {
@@ -180,10 +209,16 @@ const TOOLS = [
 function buildSystemPrompt(atlas) {
   const sync = atlas.getSyncStatus();
   const counts = Object.entries(sync).map(([k, v]) => `${k}: ${v.count}`).join(', ');
+
+  const kbFiles = atlas.getKnowledgeIndex();
+  const kbSection = kbFiles.length
+    ? `\n\nKnowledge Base files (${kbFiles.length}):\n${kbFiles.map(f => `- ${f}`).join('\n')}\nUse read_knowledge to fetch content. Use save_knowledge to store findings.`
+    : '\n\nKnowledge Base: empty. Use save_knowledge to store important findings for future reference.';
+
   return `You are ATLAS Assistant — an AI that helps users explore and understand their logistics data.
 You have access to tools that query an ATLAS logistics database. Use them to answer questions accurately.
 
-Current data: ${counts || 'no data loaded yet'}.
+Current data: ${counts || 'no data loaded yet'}.${kbSection}
 
 Guidelines:
 - Call tools to get real data before answering. Do not guess or fabricate data.
@@ -226,6 +261,12 @@ function executeTool(name, args, atlas) {
       return atlas.getAnomalies(args);
     case 'get_active_issues':
       return atlas.getActiveIssues(args);
+    case 'read_knowledge':
+      return atlas.readKnowledgeFile(args.path);
+    case 'save_knowledge':
+      return atlas.writeKnowledgeFile(args.path, args.content);
+    case 'list_knowledge':
+      return { files: atlas.getKnowledgeTree(args.folder || '') };
     default:
       return { error: `Unknown tool: ${name}` };
   }

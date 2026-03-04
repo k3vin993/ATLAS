@@ -8,6 +8,7 @@ import explorer    from './pages/explorer.js';
 import playground  from './pages/playground.js';
 import chat        from './pages/chat.js';
 import importPage  from './pages/import.js';
+import knowledge   from './pages/knowledge.js';
 import setup       from './pages/setup.js';
 
 const router = new Router($('#page-content'));
@@ -18,6 +19,7 @@ router
   .add('explorer',    explorer)
   .add('playground',  playground)
   .add('chat',        chat)
+  .add('knowledge',   knowledge)
   .add('import',      importPage)
   .add('setup',       setup);
 
