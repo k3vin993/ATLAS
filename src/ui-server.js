@@ -9,7 +9,7 @@
 import "dotenv/config";
 import { createServer } from "http";
 import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -23,6 +23,7 @@ import { ConnectorRunner } from "./connector-runner.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const UI_PATH = join(__dirname, "ui", "index.html");
+const UI_DIR = resolve(join(__dirname, "ui"));
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 
@@ -584,6 +585,18 @@ const httpServer = createServer(async (req, res) => {
       </body></html>`);
     }
     return;
+  }
+
+  // ── Static UI assets ──────────────────────────────────────────────────────
+  if (path !== '/' && !path.startsWith('/api/') && !path.startsWith('/mcp')) {
+    if (!path.includes('..')) {
+      const filePath = resolve(join(UI_DIR, path));
+      if (filePath.startsWith(UI_DIR) && existsSync(filePath)) {
+        const ext = path.substring(path.lastIndexOf('.'));
+        const mime = { '.css': 'text/css', '.js': 'application/javascript', '.html': 'text/html', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml' }[ext];
+        if (mime) { res.writeHead(200, { 'Content-Type': mime }); res.end(readFileSync(filePath)); return; }
+      }
+    }
   }
 
   res.writeHead(404, { "Content-Type": "application/json" });
