@@ -476,6 +476,54 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
+  // ── AI extraction endpoints ──────────────────────────────────────────────────
+
+  if (path === '/api/import/ai' && req.method === 'POST') {
+    const contentType = req.headers['content-type'] ?? '';
+    const boundary = contentType.split('boundary=')[1];
+    if (!boundary) { return json({ ok: false, error: 'Missing boundary — use multipart/form-data' }, 400); }
+    const chunks = [];
+    req.on('data', d => chunks.push(d));
+    req.on('end', async () => {
+      try {
+        const buf = Buffer.concat(chunks).toString('latin1');
+        const nameMatch = buf.match(/filename="([^"]+)"/);
+        const filename = nameMatch ? nameMatch[1] : 'upload.bin';
+        const fileStart = buf.indexOf('\r\n\r\n', buf.indexOf('filename=')) + 4;
+        const fileEnd = buf.lastIndexOf('\r\n--' + boundary);
+        const fileContent = buf.slice(fileStart, fileEnd);
+
+        const { writeFileSync, unlinkSync } = await import('fs');
+        const tmpPath = `/tmp/atlas-ai-${Date.now()}-${filename}`;
+        writeFileSync(tmpPath, Buffer.from(fileContent, 'latin1'));
+
+        const { processFile } = await import('./ai/extract-pipeline.js');
+        const { ConnectorRunner: CR } = await import('./connector-runner.js');
+        const tmpRunner = new CR(atlas, atlas.config ?? {});
+        const aiConfig = atlas.config?.ai ?? {};
+
+        const result = await processFile(tmpPath, {
+          atlas,
+          aiConfig,
+          upsert: (entity, record) => tmpRunner._upsert(entity, record),
+        });
+
+        try { unlinkSync(tmpPath); } catch {}
+
+        res.writeHead(result.ok ? 200 : 500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  if (path === '/api/ai/stats' && req.method === 'GET') {
+    return json(atlas.getAiExtractStats());
+  }
+
   // ── Admin endpoints (ATLAS-08, ATLAS-09) ─────────────────────────────────────
 
   if (path === "/api/admin/reload" && req.method === "POST") {

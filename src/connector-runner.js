@@ -67,6 +67,8 @@ export class ConnectorRunner {
         count = await this._syncRestApi(connector);
       } else if (connector.type === 'filesystem') {
         count = await this._syncFilesystem(connector);
+      } else if (connector.type === 'ai_extract') {
+        count = await this._syncAiExtract(connector);
       } else {
         console.error(`[ATLAS] Connector type "${connector.type}" not yet implemented`);
       }
@@ -208,6 +210,28 @@ export class ConnectorRunner {
     }
 
     return [];
+  }
+
+  async _syncAiExtract(connector) {
+    const dir = resolveEnv(connector.path ?? './inbox');
+    if (!existsSync(dir)) {
+      console.error(`[ATLAS] AI extract connector "${connector.id}": path not found: ${dir}`);
+      return 0;
+    }
+
+    // Lazy-load AI pipeline
+    const { processDirectory } = await import('./ai/extract-pipeline.js');
+    const aiConfig = this.config?.ai ?? {};
+
+    const result = await processDirectory(dir, {
+      atlas: this.atlas,
+      aiConfig,
+      upsert: (entity, record) => this._upsert(entity, record),
+      force: connector.force ?? false,
+    });
+
+    console.error(`[ATLAS] AI extract connector "${connector.id}": ${result.files_processed} processed, ${result.files_skipped} skipped, ${result.files_failed} failed, ${result.total_records} records`);
+    return result.total_records;
   }
 
   _upsertRows(connector, entity, rows) {

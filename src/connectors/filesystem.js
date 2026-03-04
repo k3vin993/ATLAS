@@ -13,7 +13,11 @@ let pdfParse = null;
 let mammoth = null;
 let xlsx = null;
 
-async function loadOptionalParsers() {
+let _parsersLoaded = false;
+
+export async function loadOptionalParsers() {
+  if (_parsersLoaded) return;
+  _parsersLoaded = true;
   try {
     pdfParse = (await import("pdf-parse")).default;
   } catch {
@@ -112,6 +116,7 @@ export class FilesystemConnector {
    * @returns {Promise<{path, text, metadata}|null>}
    */
   async _extractFile(filePath) {
+    await loadOptionalParsers();
     const ext = extname(filePath).toLowerCase();
     const name = basename(filePath);
 
@@ -139,7 +144,12 @@ export class FilesystemConnector {
         );
         text = sheets.join("\n");
       } else {
-        return null;
+        // Try reading as plain text for unsupported extensions
+        try {
+          text = readFileSync(filePath, "utf8");
+        } catch {
+          return null;
+        }
       }
 
       const stat = statSync(filePath);

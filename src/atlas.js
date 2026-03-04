@@ -53,6 +53,7 @@ export class Atlas {
     this.db.pragma("journal_mode = WAL");
     this._initCoreSchema();
     this._initConnectorState();
+    this._initAiExtractLog();
     this._initExtensionModels();
     return this.db;
   }
@@ -172,6 +173,46 @@ export class Atlas {
         runs INTEGER DEFAULT 0
       );
     `);
+  }
+
+  _initAiExtractLog() {
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS ai_extract_log (
+        file_hash TEXT PRIMARY KEY,
+        filename TEXT,
+        entity_count INTEGER DEFAULT 0,
+        record_count INTEGER DEFAULT 0,
+        input_tokens INTEGER DEFAULT 0,
+        output_tokens INTEGER DEFAULT 0,
+        last_error TEXT,
+        processed_at TEXT DEFAULT (datetime('now'))
+      );
+    `);
+  }
+
+  getAiExtractStats() {
+    try {
+      const row = this.db.prepare(`
+        SELECT
+          COUNT(*) as files_processed,
+          SUM(record_count) as total_records,
+          SUM(input_tokens) as total_input_tokens,
+          SUM(output_tokens) as total_output_tokens,
+          SUM(CASE WHEN last_error IS NOT NULL THEN 1 ELSE 0 END) as error_count,
+          MAX(processed_at) as last_processed_at
+        FROM ai_extract_log
+      `).get();
+      return {
+        files_processed: row.files_processed ?? 0,
+        total_records: row.total_records ?? 0,
+        total_input_tokens: row.total_input_tokens ?? 0,
+        total_output_tokens: row.total_output_tokens ?? 0,
+        error_count: row.error_count ?? 0,
+        last_processed_at: row.last_processed_at ?? null,
+      };
+    } catch {
+      return { files_processed: 0, total_records: 0, total_input_tokens: 0, total_output_tokens: 0, error_count: 0, last_processed_at: null };
+    }
   }
 
   _initExtensionModels() {

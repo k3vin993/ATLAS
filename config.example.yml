@@ -29,6 +29,17 @@ auth:
     #   description: "Local development"
     #   permissions: [read]
 
+# ─── AI Entity Extraction ─────────────────────────────────────────────────────
+# Drop any file (PDF, email, plain text, etc.) and AI extracts structured
+# logistics entities automatically. Requires an LLM API key.
+
+ai:
+  provider: claude              # claude | openai (also works with Ollama, Azure, LMStudio, vLLM)
+  model: claude-sonnet-4-20250514
+  api_key: "${ANTHROPIC_API_KEY}"
+  # base_url: http://localhost:11434/v1  # uncomment for Ollama or other OpenAI-compatible
+  max_tokens: 4096
+
 # ─── Connectors ──────────────────────────────────────────────────────────────
 # Each connector pulls data from a source and maps it to ATLAS standard models.
 # ATLAS syncs on startup and then on the configured interval.
@@ -150,6 +161,15 @@ connectors:
       type: "$.event_type"
       is_exception: "$.is_anomaly"
       location: "$.branch_name"
+
+  # ── Example: AI Entity Extraction (auto-extract from any file) ─────────────
+  - id: ai_inbox
+    enabled: false                    # set to true to activate
+    type: ai_extract
+    name: "AI Inbox — auto-extract"
+    path: "./inbox"                   # drop files here
+    sync:
+      interval_minutes: 15
 
 # ─── Models ──────────────────────────────────────────────────────────────────
 # Which ATLAS data models to enable. All enabled by default.

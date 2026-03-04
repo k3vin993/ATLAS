@@ -4,147 +4,234 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ATLAS Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0a0a0f; --bg2: #111118; --bg3: #16161f;
-      --border: #1e1e2e; --text: #e8e8f0; --body: #a0a0c0;
-      --muted: #6b6b8a; --accent: #4f8ef7; --green: #22c55e;
-      --yellow: #eab308; --red: #ef4444;
-      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --bg: #000000; --bg2: #171717; --bg3: #222222;
+      --glass: #141414; --glass-hover: rgba(0,112,243,0.4);
+      --border: #303030; --border2: #444444;
+      --text: #f5f5f5; --body: #c0c0c0; --muted: #999999;
+      --accent: #0070f3;
+      --green: #4ade80; --green-bright: #22c55e;
+      --yellow: #facc15; --yellow-bright: #eab308;
+      --red: #f87171; --red-bright: #ef4444;
+      --mono: 'Geist Mono', 'JetBrains Mono', monospace;
+      --sans: 'Geist', system-ui, -apple-system, sans-serif;
     }
     html, body { height: 100%; }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-           font-size: 14px; line-height: 1.6; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--sans);
+      font-size: 14px; line-height: 1.6; display: flex; flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* ── Layout ── */
     .app { display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 220px; background: var(--bg2); border-right: 1px solid var(--border);
-               display: flex; flex-direction: column; flex-shrink: 0; }
-    .main { flex: 1; overflow-y: auto; }
+    .sidebar {
+      width: 232px; background: var(--bg); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .main {
+      flex: 1; overflow-y: auto;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
 
     /* ── Sidebar ── */
-    .logo { padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid var(--border); }
-    .logo-text { font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; }
+    .logo { padding: 1.5rem 1.25rem 1.25rem; border-bottom: 1px solid var(--border); }
+    .logo-text { font-size: 1.05rem; font-weight: 800; letter-spacing: 0.1em; }
     .logo-text span { color: var(--accent); }
-    .logo-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; font-family: var(--mono); }
+    .logo-sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; font-family: var(--mono); letter-spacing: 0.02em; }
 
-    .nav { padding: 0.75rem 0.5rem; flex: 1; }
-    .nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.75rem;
-                border-radius: 7px; cursor: pointer; color: var(--muted); font-size: 0.875rem;
-                font-weight: 500; transition: all 0.12s; margin-bottom: 0.15rem; }
-    .nav-item:hover { background: var(--bg3); color: var(--text); }
-    .nav-item.active { background: rgba(79,142,247,0.12); color: var(--accent); }
-    .nav-icon { font-size: 1rem; width: 1.1rem; text-align: center; }
+    .nav { padding: 0.75rem 0.6rem; flex: 1; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.85rem;
+      border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 0.875rem;
+      font-weight: 500; transition: all 0.15s ease; margin-bottom: 2px;
+    }
+    .nav-item:hover { background: var(--bg2); color: var(--text); }
+    .nav-item.active { background: rgba(0,112,243,0.1); color: var(--accent); }
+    .nav-icon { font-size: 1rem; width: 1.2rem; text-align: center; }
 
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green);
-                  margin: auto 0.75rem 0.75rem; }
+    .sidebar-footer {
+      padding: 0.75rem 1rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green-bright);
+      box-shadow: 0 0 8px rgba(34,197,94,0.5);
+    }
+    .sidebar-footer span { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); }
 
     /* ── Page ── */
-    .page { padding: 2rem; display: none; }
+    .page { padding: 2.5rem; display: none; max-width: 1200px; }
     .page.active { display: block; }
-    .page-header { margin-bottom: 1.75rem; }
-    .page-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
-    .page-sub { color: var(--body); font-size: 0.875rem; margin-top: 0.3rem; }
+    .page-header { margin-bottom: 2rem; }
+    .page-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.4rem;
+    }
+    .page-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+    .page-sub { color: var(--body); font-size: 0.9rem; margin-top: 0.35rem; line-height: 1.5; }
 
-    /* ── Cards ── */
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    /* ── Glass Cards ── */
+    .glass {
+      backdrop-filter: blur(16px);
+      background: var(--glass); border: 1px solid #2a2a2a;
+      border-radius: 12px; padding: 1.5rem;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .glass:hover {
+      border-color: var(--glass-hover);
+      box-shadow: 0 0 30px rgba(0,112,243,0.12);
+    }
+
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
     .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-    @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-4, .grid-3 { grid-template-columns: repeat(2,1fr); } }
 
-    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
-    .card-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-                  color: var(--muted); margin-bottom: 0.5rem; }
-    .card-value { font-size: 1.8rem; font-weight: 700; font-family: var(--mono); letter-spacing: -0.03em; }
-    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+    .card { composes: glass; }
+    .card-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.75rem;
+    }
+    .card-value { font-size: 2rem; font-weight: 700; font-family: var(--mono); letter-spacing: -0.03em; color: var(--text); }
+    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
 
-    /* ── Status card ── */
-    .status-card { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.5rem;
-                   background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
-    .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600;
-                    padding: 0.25rem 0.65rem; border-radius: 100px; }
-    .status-badge.running { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .status-uptime { color: var(--muted); font-size: 0.8rem; margin-left: auto; font-family: var(--mono); }
+    /* ── Status bar ── */
+    .status-card {
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;
+      background: var(--glass); border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1rem 1.5rem;
+    }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 600;
+      padding: 0.3rem 0.75rem; border-radius: 100px;
+    }
+    .status-badge.running { background: rgba(34,197,94,0.1); color: var(--green); }
+    .status-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .status-uptime { color: var(--muted); font-size: 0.78rem; margin-left: auto; font-family: var(--mono); }
 
     /* ── Connectors ── */
-    .connector-row { display: flex; align-items: center; gap: 1rem; background: var(--bg2);
-                     border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem;
-                     margin-bottom: 0.75rem; }
-    .connector-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(79,142,247,0.1);
-                      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-    .connector-name { font-weight: 600; font-size: 0.9rem; }
-    .connector-type { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); margin-top: 0.1rem; }
+    .connector-row {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--glass); border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1rem 1.5rem; margin-bottom: 0.75rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .connector-row:hover {
+      border-color: var(--glass-hover);
+      box-shadow: 0 0 20px rgba(0,112,243,0.1);
+    }
+    .connector-icon {
+      width: 40px; height: 40px; border-radius: 10px; background: rgba(0,112,243,0.1);
+      display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;
+    }
+    .connector-name { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+    .connector-type { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); margin-top: 0.15rem; }
     .connector-meta { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+
     .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider { position: absolute; inset: 0; border-radius: 10px; background: var(--border);
-                     cursor: pointer; transition: 0.2s; }
+    .toggle-slider { position: absolute; inset: 0; border-radius: 10px; background: var(--border); cursor: pointer; transition: 0.2s; }
     .toggle input:checked + .toggle-slider { background: var(--accent); }
-    .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%;
-                              background: white; top: 3px; left: 3px; transition: 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: 0.2s; }
     .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
-    .tag { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.45rem;
-           border-radius: 4px; letter-spacing: 0.04em; }
-    .tag-green { background: rgba(34,197,94,0.12); color: var(--green); }
-    .tag-gray { background: rgba(107,107,138,0.15); color: var(--muted); }
+
+    .tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.6rem;
+      border-radius: 100px; letter-spacing: 0.03em;
+    }
+    .tag-green { background: rgba(74,222,128,0.1); color: var(--green); }
+    .tag-gray { background: rgba(153,153,153,0.1); color: var(--muted); }
 
     /* ── Explorer ── */
-    .tabs { display: flex; gap: 0.25rem; margin-bottom: 1.25rem; background: var(--bg2);
-            border: 1px solid var(--border); border-radius: 8px; padding: 0.25rem; display: inline-flex; }
-    .tab { padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
-           font-weight: 500; color: var(--muted); transition: all 0.12s; }
+    .tabs {
+      display: inline-flex; gap: 2px; margin-bottom: 1.25rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 4px;
+    }
+    .tab {
+      padding: 0.45rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.84rem;
+      font-weight: 500; color: var(--muted); transition: all 0.15s ease;
+    }
     .tab.active { background: var(--bg3); color: var(--text); }
-    .tab:hover:not(.active) { color: var(--text); }
+    .tab:hover:not(.active) { color: var(--body); }
 
     .search-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
-    .search-input { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-                    padding: 0.6rem 1rem; color: var(--text); font-size: 0.875rem; outline: none;
-                    transition: border-color 0.12s; }
+    .search-input {
+      flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.65rem 1rem; color: var(--text); font-size: 0.875rem; font-family: var(--sans);
+      outline: none; transition: border-color 0.2s ease;
+    }
     .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--muted); }
 
     .data-table { width: 100%; border-collapse: collapse; }
-    .data-table th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.72rem; font-weight: 600;
-                     letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted);
-                     border-bottom: 1px solid var(--border); }
-    .data-table td { padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--body);
-                     font-size: 0.85rem; vertical-align: top; }
+    .data-table th {
+      text-align: left; padding: 0.7rem 1rem; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 0.75rem 1rem; border-bottom: 1px solid #1a1a1a; color: var(--body);
+      font-size: 0.85rem; vertical-align: top;
+    }
     .data-table tr:last-child td { border-bottom: none; }
-    .data-table tr:hover td { background: var(--bg2); }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
     .data-table .id-cell { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
-    .data-table .mode-badge { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px;
-                               background: rgba(79,142,247,0.1); color: var(--accent); font-weight: 500; }
+    .data-table .mode-badge {
+      font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 100px;
+      background: rgba(0,112,243,0.1); color: var(--accent); font-weight: 600;
+    }
     .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
 
     /* ── Playground ── */
     .playground { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; height: calc(100vh - 10rem); }
     @media (max-width: 800px) { .playground { grid-template-columns: 1fr; } }
-    .pane { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
-            display: flex; flex-direction: column; overflow: hidden; }
-    .pane-header { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-weight: 600;
-                   font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
-    .pane-body { flex: 1; padding: 1rem; overflow-y: auto; }
+    .pane {
+      background: var(--glass); border: 1px solid #2a2a2a; border-radius: 12px;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .pane-header {
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid #2a2a2a; font-weight: 600;
+      font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text);
+    }
+    .pane-body { flex: 1; padding: 1.25rem; overflow-y: auto; }
 
-    .field { margin-bottom: 0.9rem; }
-    .field label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--muted);
-                   margin-bottom: 0.35rem; letter-spacing: 0.04em; text-transform: uppercase; }
-    .field select, .field input { width: 100%; background: var(--bg); border: 1px solid var(--border);
-                                  border-radius: 7px; padding: 0.55rem 0.75rem; color: var(--text);
-                                  font-size: 0.875rem; outline: none; transition: border-color 0.12s; }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block; font-size: 0.75rem; font-weight: 500; color: var(--muted);
+      margin-bottom: 0.4rem; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .field select, .field input {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.6rem 0.85rem; color: var(--text);
+      font-size: 0.875rem; font-family: var(--sans); outline: none; transition: border-color 0.2s ease;
+    }
     .field select:focus, .field input:focus { border-color: var(--accent); }
     .field select option { background: var(--bg2); }
 
-    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem;
-           border-radius: 7px; font-size: 0.875rem; font-weight: 600; cursor: pointer;
-           border: none; transition: all 0.12s; }
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; font-family: var(--sans);
+      cursor: pointer; border: none; transition: all 0.15s ease;
+    }
     .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #3a7de8; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.78rem; }
+    .btn-primary:hover { background: #3b82f6; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: transparent; border: 1px solid var(--border2); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--muted); background: var(--bg2); }
+    .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.78rem; }
 
-    .json-output { font-family: var(--mono); font-size: 0.78rem; line-height: 1.7; color: var(--body);
-                   white-space: pre-wrap; word-break: break-all; }
+    .json-output { font-family: var(--mono); font-size: 0.78rem; line-height: 1.7; color: var(--body); white-space: pre-wrap; word-break: break-all; }
     .json-key { color: var(--accent); }
     .json-str { color: var(--green); }
     .json-num { color: #f4a261; }
@@ -152,9 +239,72 @@
     .json-null { color: var(--muted); }
 
     .result-empty { color: var(--muted); font-style: italic; padding: 1rem 0; }
-    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3);
-               border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Import ── */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 2rem;
+      text-align: center; cursor: pointer; transition: all 0.2s ease;
+      background: rgba(0,112,243,0.02);
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(0,112,243,0.05); }
+    .drop-zone-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .drop-zone-text { font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+    .drop-zone-hint { font-size: 0.8rem; color: var(--muted); }
+
+    .import-preview {
+      margin-top: 1rem; background: var(--glass); border: 1px solid #2a2a2a;
+      border-radius: 12px; overflow: hidden;
+    }
+    .import-preview-header {
+      padding: 0.75rem 1.25rem; border-bottom: 1px solid #2a2a2a;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .import-preview-title { font-weight: 600; font-size: 0.85rem; color: var(--text); }
+    .import-preview-meta { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
+    .import-preview-body {
+      padding: 1rem 1.25rem; font-family: var(--mono); font-size: 0.78rem;
+      color: var(--body); max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+    }
+
+    .entity-select { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+    .entity-chip {
+      font-size: 0.75rem; font-weight: 500; padding: 0.3rem 0.7rem;
+      border-radius: 100px; cursor: pointer; transition: all 0.15s ease;
+      border: 1px solid var(--border); color: var(--muted); background: transparent;
+    }
+    .entity-chip:hover { border-color: var(--accent); color: var(--body); }
+    .entity-chip.selected { background: rgba(0,112,243,0.1); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+    .import-log { margin-top: 1rem; font-family: var(--mono); font-size: 0.8rem; line-height: 1.8; }
+    .import-log .ok { color: var(--green); }
+    .import-log .err { color: var(--red); }
+
+    .seed-examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    @media (max-width: 800px) { .seed-examples { grid-template-columns: repeat(2, 1fr); } }
+    .seed-card {
+      background: var(--glass); border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1.25rem; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .seed-card:hover {
+      border-color: var(--glass-hover);
+      box-shadow: 0 0 25px rgba(0,112,243,0.12);
+      transform: translateY(-2px);
+    }
+    .seed-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .seed-card-name { font-weight: 600; font-size: 0.9rem; color: var(--text); margin-bottom: 0.2rem; }
+    .seed-card-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); margin: 1.5rem 0; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border2); }
   </style>
 </head>
 <body>
@@ -164,26 +314,29 @@
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-text">ATLAS<span>MCP</span></div>
-      <div class="logo-sub">v0.1.0 · dashboard</div>
+      <div class="logo-sub">v1.0 dashboard</div>
     </div>
     <nav class="nav">
       <div class="nav-item active" onclick="showPage('dashboard')">
-        <span class="nav-icon">⬡</span> Dashboard
+        <span class="nav-icon">&#x2B21;</span> Dashboard
       </div>
       <div class="nav-item" onclick="showPage('connectors')">
-        <span class="nav-icon">⚡</span> Connectors
+        <span class="nav-icon">&#x26A1;</span> Connectors
       </div>
       <div class="nav-item" onclick="showPage('explorer')">
-        <span class="nav-icon">◫</span> Explorer
+        <span class="nav-icon">&#x25EB;</span> Explorer
       </div>
       <div class="nav-item" onclick="showPage('playground')">
-        <span class="nav-icon">▷</span> Playground
+        <span class="nav-icon">&#x25B7;</span> Playground
       </div>
       <div class="nav-item" onclick="showPage('import')">
-        <span class="nav-icon">⬆</span> Import Data
+        <span class="nav-icon">&#x2B06;</span> Import Data
       </div>
     </nav>
-    <div class="status-dot" id="sidebar-dot" title="Running"></div>
+    <div class="sidebar-footer">
+      <div class="status-dot" id="sidebar-dot" title="Running"></div>
+      <span>System online</span>
+    </div>
   </aside>
 
   <!-- Main -->
@@ -192,40 +345,43 @@
     <!-- Dashboard -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
+        <div class="page-label">Overview</div>
         <div class="page-title">Dashboard</div>
         <div class="page-sub">System health and indexed data overview</div>
       </div>
       <div class="status-card">
         <span class="status-badge running"><span class="dot"></span> Running</span>
-        <span id="uptime-label" style="color:var(--muted);font-size:0.8rem;font-family:var(--mono);">loading…</span>
-        <span class="status-uptime" id="last-refresh">—</span>
+        <span id="uptime-label" style="color:var(--muted);font-size:0.78rem;font-family:var(--mono);">loading&hellip;</span>
+        <span class="status-uptime" id="last-refresh">&mdash;</span>
       </div>
       <div class="grid-4" id="counts-grid">
-        <div class="card"><div class="card-label">Shipments</div><div class="card-value" id="cnt-shipments">—</div></div>
-        <div class="card"><div class="card-label">Carriers</div><div class="card-value" id="cnt-carriers">—</div></div>
-        <div class="card"><div class="card-label">Documents</div><div class="card-value" id="cnt-documents">—</div></div>
-        <div class="card"><div class="card-label">Rates</div><div class="card-value" id="cnt-rates">—</div></div>
+        <div class="glass"><div class="card-label">Shipments</div><div class="card-value" id="cnt-shipments">&mdash;</div></div>
+        <div class="glass"><div class="card-label">Carriers</div><div class="card-value" id="cnt-carriers">&mdash;</div></div>
+        <div class="glass"><div class="card-label">Documents</div><div class="card-value" id="cnt-documents">&mdash;</div></div>
+        <div class="glass"><div class="card-label">Rates</div><div class="card-value" id="cnt-rates">&mdash;</div></div>
       </div>
       <div class="grid-2">
-        <div class="card"><div class="card-label">Routes</div><div class="card-value" id="cnt-routes">—</div><div class="card-sub">Indexed lanes</div></div>
-        <div class="card"><div class="card-label">Events</div><div class="card-value" id="cnt-events">—</div><div class="card-sub">Shipment events</div></div>
+        <div class="glass"><div class="card-label">Routes</div><div class="card-value" id="cnt-routes">&mdash;</div><div class="card-sub">Indexed lanes</div></div>
+        <div class="glass"><div class="card-label">Events</div><div class="card-value" id="cnt-events">&mdash;</div><div class="card-sub">Tracking events</div></div>
       </div>
     </div>
 
     <!-- Connectors -->
     <div class="page" id="page-connectors">
       <div class="page-header">
+        <div class="page-label">Data Sources</div>
         <div class="page-title">Connectors</div>
         <div class="page-sub">Data sources connected to this ATLAS instance</div>
       </div>
       <div id="connectors-list">
-        <div style="color:var(--muted);padding:2rem 0;">Loading connectors…</div>
+        <div style="color:var(--muted);padding:2rem 0;">Loading connectors&hellip;</div>
       </div>
     </div>
 
     <!-- Explorer -->
     <div class="page" id="page-explorer">
       <div class="page-header">
+        <div class="page-label">Data</div>
         <div class="page-title">Explorer</div>
         <div class="page-sub">Browse indexed logistics data</div>
       </div>
@@ -238,26 +394,26 @@
         <div class="tab" onclick="setExplorerTable('events',this)">Events</div>
       </div>
       <div class="search-bar">
-        <input class="search-input" id="explorer-search" placeholder="Search…" oninput="debounceExplorer()" />
+        <input class="search-input" id="explorer-search" placeholder="Search&hellip;" oninput="debounceExplorer()" />
         <button class="btn btn-primary btn-sm" onclick="loadExplorer()">Refresh</button>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-        <div id="explorer-table-wrap"><div class="empty-state">Loading…</div></div>
+      <div class="glass" style="padding:0;overflow:hidden;">
+        <div id="explorer-table-wrap"><div class="empty-state">Loading&hellip;</div></div>
       </div>
     </div>
 
-    <!-- Playground -->
+    <!-- Import Data -->
     <div class="page" id="page-import">
       <div class="page-header">
+        <div class="page-label">Ingest</div>
         <div class="page-title">Import Data</div>
         <div class="page-sub">Upload files or load seed examples into ATLAS</div>
       </div>
 
-      <!-- Tabs: Upload / Seed Examples -->
       <div class="tabs" style="max-width:600px">
-        <div class="tab active" id="import-tab-upload" onclick="switchImportTab('upload')">📁 Upload Files</div>
-        <div class="tab" id="import-tab-seed" onclick="switchImportTab('seed')">🌱 Seed Examples</div>
-        <div class="tab" id="import-tab-folder" onclick="switchImportTab('folder')">📂 Folder Path</div>
+        <div class="tab active" id="import-tab-upload" onclick="switchImportTab('upload')">Upload Files</div>
+        <div class="tab" id="import-tab-seed" onclick="switchImportTab('seed')">Seed Examples</div>
+        <div class="tab" id="import-tab-folder" onclick="switchImportTab('folder')">Folder Path</div>
       </div>
 
       <!-- Upload tab -->
@@ -266,9 +422,9 @@
              ondragover="event.preventDefault();this.classList.add('dragover')"
              ondragleave="this.classList.remove('dragover')"
              ondrop="handleDrop(event)">
-          <div class="drop-zone-icon">⬆️</div>
+          <div class="drop-zone-icon">&#x2B06;&#xFE0F;</div>
           <div class="drop-zone-text">Drop files here or click to browse</div>
-          <div class="drop-zone-hint">JSON · CSV · XLSX · Markdown with YAML front matter</div>
+          <div class="drop-zone-hint">JSON &middot; CSV &middot; XLSX &middot; Markdown with YAML front matter</div>
           <input type="file" id="fileInput" style="display:none" multiple
                  accept=".json,.csv,.xlsx,.xls,.md"
                  onchange="handleFiles(this.files)">
@@ -280,8 +436,8 @@
           </div>
           <div class="import-preview-body" id="previewBody"></div>
         </div>
-        <div style="margin-top:1rem">
-          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">Target entity (auto-detected from filename):</div>
+        <div style="margin-top:1.25rem">
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">Target entity (auto-detected from filename):</div>
           <div class="entity-select" id="entitySelect">
             <span class="entity-chip selected" id="chip-auto" onclick="selectEntity('auto')">auto-detect</span>
             <span class="entity-chip" onclick="selectEntity('shipments')">shipments</span>
@@ -297,7 +453,7 @@
             <span class="entity-chip" onclick="selectEntity('issues')">issues</span>
           </div>
         </div>
-        <button class="btn btn-primary" id="importBtn" onclick="doImport()" disabled style="margin-top:1rem">
+        <button class="btn btn-primary" id="importBtn" onclick="doImport()" disabled style="margin-top:1.25rem">
           Import Records
         </button>
         <div id="importLog" class="import-log" style="display:none"></div>
@@ -305,52 +461,52 @@
 
       <!-- Seed Examples tab -->
       <div id="import-panel-seed" style="display:none">
-        <p style="color:var(--body);font-size:0.9rem;margin-bottom:1rem">
+        <p style="color:var(--body);font-size:0.9rem;margin-bottom:1.25rem;line-height:1.5">
           Load realistic logistics demo data into ATLAS. Useful for testing and demos.
         </p>
         <div class="seed-examples">
           <div class="seed-card" onclick="loadSeedExample('shipments')">
-            <div class="seed-card-icon">📦</div>
+            <div class="seed-card-icon">&#x1F4E6;</div>
             <div class="seed-card-name">Shipments</div>
             <div class="seed-card-desc">3 shipments: in_transit, delivered, exception</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('carriers')">
-            <div class="seed-card-icon">🚚</div>
+            <div class="seed-card-icon">&#x1F69A;</div>
             <div class="seed-card-name">Carriers</div>
             <div class="seed-card-desc">3 carriers: road FTL, reefer, ocean FCL</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('rates')">
-            <div class="seed-card-icon">💰</div>
+            <div class="seed-card-icon">&#x1F4B0;</div>
             <div class="seed-card-name">Rates</div>
             <div class="seed-card-desc">7 rate entries across lanes</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('lanes')">
-            <div class="seed-card-icon">🗺️</div>
+            <div class="seed-card-icon">&#x1F5FA;&#xFE0F;</div>
             <div class="seed-card-name">Lanes</div>
             <div class="seed-card-desc">PL-DE, UA-PL, DE-NL with transit times</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('parties')">
-            <div class="seed-card-icon">🏢</div>
+            <div class="seed-card-icon">&#x1F3E2;</div>
             <div class="seed-card-name">Parties</div>
-            <div class="seed-card-desc">Shipper × 2, 3PL/broker</div>
+            <div class="seed-card-desc">Shipper &times; 2, 3PL/broker</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('tracking_events')">
-            <div class="seed-card-icon">📍</div>
+            <div class="seed-card-icon">&#x1F4CD;</div>
             <div class="seed-card-name">Tracking Events</div>
             <div class="seed-card-desc">GPS events + 1 exception</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('service_levels')">
-            <div class="seed-card-icon">⏱️</div>
+            <div class="seed-card-icon">&#x23F1;&#xFE0F;</div>
             <div class="seed-card-name">Service Levels</div>
             <div class="seed-card-desc">2 SLA profiles (standard + GDP)</div>
           </div>
           <div class="seed-card" onclick="loadSeedExample('documents')">
-            <div class="seed-card-icon">📄</div>
+            <div class="seed-card-icon">&#x1F4C4;</div>
             <div class="seed-card-name">Documents</div>
             <div class="seed-card-desc">CMR, POD, invoice examples</div>
           </div>
           <div class="seed-card" onclick="loadSeedAll()">
-            <div class="seed-card-icon" style="color:var(--accent)">⬡</div>
+            <div class="seed-card-icon" style="color:var(--accent)">&#x2B21;</div>
             <div class="seed-card-name" style="color:var(--accent)">Load All</div>
             <div class="seed-card-desc">34 records across all entities</div>
           </div>
@@ -360,13 +516,12 @@
 
       <!-- Folder Path tab -->
       <div id="import-panel-folder" style="display:none">
-        <p style="color:var(--body);font-size:0.9rem;margin-bottom:1rem">
+        <p style="color:var(--body);font-size:0.9rem;margin-bottom:1.25rem;line-height:1.5">
           Load all files from a folder on the server filesystem.
         </p>
         <div style="display:flex;gap:0.75rem;align-items:center">
           <input id="folderPath" type="text" value="./seed"
-                 style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;
-                        padding:0.6rem 0.85rem;color:var(--text);font-family:var(--mono);font-size:0.85rem"
+                 class="search-input" style="font-family:var(--mono);font-size:0.85rem"
                  placeholder="./seed or /absolute/path">
           <button class="btn btn-primary" onclick="doFolderImport()">Run Import</button>
         </div>
@@ -377,15 +532,16 @@
       </div>
     </div>
 
+    <!-- Playground -->
     <div class="page" id="page-playground">
       <div class="page-header">
+        <div class="page-label">Tools</div>
         <div class="page-title">Query Playground</div>
         <div class="page-sub">Test MCP tools directly</div>
       </div>
       <div class="playground">
-        <!-- Input -->
         <div class="pane">
-          <div class="pane-header">🛠 Tool</div>
+          <div class="pane-header">&#x1F6E0; Tool</div>
           <div class="pane-body">
             <div class="field">
               <label>Tool</label>
@@ -398,12 +554,11 @@
               </select>
             </div>
             <div id="tool-fields"></div>
-            <button class="btn btn-primary" id="run-btn" onclick="runQuery()">▷ Run</button>
+            <button class="btn btn-primary" id="run-btn" onclick="runQuery()">&#x25B7; Run</button>
           </div>
         </div>
-        <!-- Output -->
         <div class="pane">
-          <div class="pane-header">📤 Result</div>
+          <div class="pane-header">&#x1F4E4; Result</div>
           <div class="pane-body" id="result-pane">
             <div class="result-empty">Run a tool to see results</div>
           </div>
@@ -415,7 +570,7 @@
 </div>
 
 <script>
-const API = '';  // same origin
+const API = '';
 
 // ── Navigation ───────────────────────────────────────────────────────────────
 function showPage(name) {
@@ -437,7 +592,7 @@ async function loadDashboard() {
     const c = d.counts || {};
     ['shipments','carriers','documents','rates','routes','events'].forEach(k => {
       const el = document.getElementById('cnt-' + k);
-      if (el) el.textContent = (c[k] ?? 0).toLocaleString();
+      if (el) el.textContent = (c[k]?.count ?? 0).toLocaleString();
     });
     const u = d.uptime ?? 0;
     const h = Math.floor(u/3600), m = Math.floor((u%3600)/60), s = u%60;
@@ -451,7 +606,7 @@ async function loadDashboard() {
 }
 
 // ── Connectors ───────────────────────────────────────────────────────────────
-const CONNECTOR_ICONS = { email:'📧', filesystem:'📁', api:'🔌', sap:'🏭', oracle:'🗄️', transporeon:'🚛' };
+const CONNECTOR_ICONS = { email:'\u{1F4E7}', filesystem:'\u{1F4C1}', api:'\u{1F50C}', sap:'\u{1F3ED}', oracle:'\u{1F5C4}', transporeon:'\u{1F69B}' };
 
 async function loadConnectors() {
   const list = document.getElementById('connectors-list');
@@ -464,13 +619,13 @@ async function loadConnectors() {
     }
     list.innerHTML = d.connectors.map(c => `
       <div class="connector-row">
-        <div class="connector-icon">${CONNECTOR_ICONS[c.name] || '⚙️'}</div>
+        <div class="connector-icon">${CONNECTOR_ICONS[c.name] || '\u2699\uFE0F'}</div>
         <div>
           <div class="connector-name">${c.name}</div>
           <div class="connector-type">${c.type}</div>
         </div>
         <div class="connector-meta">
-          <span class="tag ${c.enabled ? 'tag-green' : 'tag-gray'}">${c.enabled ? 'Enabled' : 'Disabled'}</span>
+          <span class="tag ${c.enabled ? 'tag-green' : 'tag-gray'}">${c.enabled ? 'Active' : 'Disabled'}</span>
           <label class="toggle">
             <input type="checkbox" ${c.enabled ? 'checked' : ''} disabled>
             <span class="toggle-slider"></span>
@@ -510,12 +665,12 @@ const TABLE_COLS = {
 
 function getCellValue(row, col) {
   const v = row[col];
-  if (v === undefined || v === null) return '—';
+  if (v === undefined || v === null) return '\u2014';
   if (typeof v === 'object') {
     if (v.city && v.country) return `${v.city}, ${v.country}`;
     if (v.name) return v.name;
     if (v.id) return v.id;
-    return JSON.stringify(v).substring(0, 40) + '…';
+    return JSON.stringify(v).substring(0, 40) + '\u2026';
   }
   return String(v);
 }
@@ -523,7 +678,7 @@ function getCellValue(row, col) {
 async function loadExplorer() {
   const wrap = document.getElementById('explorer-table-wrap');
   const search = document.getElementById('explorer-search').value;
-  wrap.innerHTML = '<div class="empty-state">Loading…</div>';
+  wrap.innerHTML = '<div class="empty-state">Loading\u2026</div>';
   try {
     const url = `${API}/api/data/${explorerTable}?limit=100${search ? '&search=' + encodeURIComponent(search) : ''}`;
     const r = await fetch(url);
@@ -538,13 +693,13 @@ async function loadExplorer() {
         <tbody>
           ${d.rows.map(row => `
             <tr>${cols.map((c,i) => `
-              <td class="${i===0 ? 'id-cell' : ''} ${c==='mode' ? '' : ''}">
+              <td class="${i===0 ? 'id-cell' : ''}">
                 ${c === 'mode' && row[c] ? `<span class="mode-badge">${row[c]}</span>` : getCellValue(row, c)}
               </td>`).join('')}
             </tr>`).join('')}
         </tbody>
       </table>
-      <div style="padding:0.6rem 0.75rem;border-top:1px solid var(--border);color:var(--muted);font-size:0.75rem;">
+      <div style="padding:0.7rem 1rem;border-top:1px solid #1a1a1a;color:var(--muted);font-size:0.75rem;font-family:var(--mono);">
         ${d.total} record${d.total !== 1 ? 's' : ''}
       </div>`;
   } catch(e) {
@@ -555,7 +710,7 @@ async function loadExplorer() {
 // ── Playground ───────────────────────────────────────────────────────────────
 const TOOL_FIELDS = {
   query: [
-    { name:'question', label:'Question', type:'text', placeholder:'best carrier for Warsaw → Hamburg' },
+    { name:'question', label:'Question', type:'text', placeholder:'best carrier for Warsaw \u2192 Hamburg' },
     { name:'mode', label:'Mode (optional)', type:'select', options:['','road','ocean','air','rail','multimodal'] },
     { name:'limit', label:'Limit', type:'text', placeholder:'10' },
   ],
@@ -607,8 +762,8 @@ async function runQuery() {
   const btn = document.getElementById('run-btn');
   const pane = document.getElementById('result-pane');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Running…';
-  pane.innerHTML = '<div class="result-empty">Running…</div>';
+  btn.innerHTML = '<span class="spinner"></span> Running\u2026';
+  pane.innerHTML = '<div class="result-empty">Running\u2026</div>';
 
   try {
     const r = await fetch(API + '/api/query', {
@@ -622,7 +777,7 @@ async function runQuery() {
     pane.innerHTML = `<div style="color:var(--red)">Error: ${e.message}</div>`;
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '▷ Run';
+    btn.innerHTML = '\u25B7 Run';
   }
 }
 
@@ -666,15 +821,13 @@ function handleFiles(files) {
   if (!importFiles.length) return;
   const f = importFiles[0];
   document.getElementById('previewTitle').textContent = f.name;
-  document.getElementById('previewMeta').textContent = (f.size/1024).toFixed(1) + ' KB · ' + importFiles.length + ' file(s)';
+  document.getElementById('previewMeta').textContent = (f.size/1024).toFixed(1) + ' KB \u00B7 ' + importFiles.length + ' file(s)';
   document.getElementById('uploadPreview').style.display = '';
   document.getElementById('importBtn').disabled = false;
-  // Preview first file
   const reader = new FileReader();
   reader.onload = e => {
     let text = e.target.result;
-    if (text.length > 2000) text = text.slice(0, 2000) + '
-…';
+    if (text.length > 2000) text = text.slice(0, 2000) + '\u2026';
     document.getElementById('previewBody').textContent = text;
   };
   reader.readAsText(f);
@@ -694,52 +847,52 @@ async function doImport() {
     const res = await fetch('/api/import/file', { method: 'POST', body: formData });
     const data = await res.json();
     if (data.ok) {
-      log.innerHTML += `<div class="ok">✓ ${file.name} → ${entity}: ${data.imported} records</div>`;
+      log.innerHTML += `<div class="ok">\u2713 ${file.name} \u2192 ${entity}: ${data.imported} records</div>`;
       total += data.imported;
     } else {
-      log.innerHTML += `<div class="err">✗ ${file.name}: ${data.error}</div>`;
+      log.innerHTML += `<div class="err">\u2717 ${file.name}: ${data.error}</div>`;
     }
   }
-  if (total > 0) { log.innerHTML += `<div class="ok" style="margin-top:0.5rem;font-weight:600">✓ Total: ${total} records imported</div>`; loadDashboard(); }
+  if (total > 0) { log.innerHTML += `<div class="ok" style="margin-top:0.5rem;font-weight:600">\u2713 Total: ${total} records imported</div>`; loadDashboard(); }
 }
 
 async function loadSeedExample(entity) {
   const log = document.getElementById('seedLog');
-  log.style.display = ''; 
-  log.innerHTML += `<div style="color:var(--muted)">Loading ${entity}…</div>`;
+  log.style.display = '';
+  log.innerHTML += `<div style="color:var(--muted)">Loading ${entity}\u2026</div>`;
   const res = await fetch('/api/import/seed', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ entity })
   });
   const data = await res.json();
   if (data.ok) {
-    log.innerHTML += `<div class="ok">✓ ${entity}: ${data.imported} records loaded</div>`;
+    log.innerHTML += `<div class="ok">\u2713 ${entity}: ${data.imported} records loaded</div>`;
     loadDashboard();
   } else {
-    log.innerHTML += `<div class="err">✗ ${entity}: ${data.error}</div>`;
+    log.innerHTML += `<div class="err">\u2717 ${entity}: ${data.error}</div>`;
   }
 }
 
 async function loadSeedAll() {
   const log = document.getElementById('seedLog');
-  log.style.display = ''; log.innerHTML = '<div style="color:var(--muted)">Loading all seed data…</div>';
+  log.style.display = ''; log.innerHTML = '<div style="color:var(--muted)">Loading all seed data\u2026</div>';
   const res = await fetch('/api/import/seed', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ entity: 'all' })
   });
   const data = await res.json();
   if (data.ok) {
-    log.innerHTML += `<div class="ok">✓ Loaded ${data.imported} records across ${data.entities} entities</div>`;
+    log.innerHTML += `<div class="ok">\u2713 Loaded ${data.imported} records across ${data.entities} entities</div>`;
     loadDashboard();
   } else {
-    log.innerHTML += `<div class="err">✗ ${data.error}</div>`;
+    log.innerHTML += `<div class="err">\u2717 ${data.error}</div>`;
   }
 }
 
 async function doFolderImport() {
   const path = document.getElementById('folderPath').value.trim();
   const log = document.getElementById('folderLog');
-  log.style.display = ''; log.innerHTML = `<div style="color:var(--muted)">Scanning ${path}…</div>`;
+  log.style.display = ''; log.innerHTML = `<div style="color:var(--muted)">Scanning ${path}\u2026</div>`;
   const res = await fetch('/api/import/folder', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ path })
@@ -748,19 +901,19 @@ async function doFolderImport() {
   if (data.ok) {
     data.results.forEach(r => {
       log.innerHTML += r.ok
-        ? `<div class="ok">✓ ${r.file} → ${r.entity}: ${r.imported} records</div>`
-        : `<div class="err">✗ ${r.file}: ${r.error}</div>`;
+        ? `<div class="ok">\u2713 ${r.file} \u2192 ${r.entity}: ${r.imported} records</div>`
+        : `<div class="err">\u2717 ${r.file}: ${r.error}</div>`;
     });
-    log.innerHTML += `<div class="ok" style="margin-top:0.5rem;font-weight:600">✓ Total: ${data.total} records from ${data.results.length} files</div>`;
+    log.innerHTML += `<div class="ok" style="margin-top:0.5rem;font-weight:600">\u2713 Total: ${data.total} records from ${data.results.length} files</div>`;
     loadDashboard();
   } else {
-    log.innerHTML += `<div class="err">✗ ${data.error}</div>`;
+    log.innerHTML += `<div class="err">\u2717 ${data.error}</div>`;
   }
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 loadDashboard();
-setInterval(loadDashboard, 30000); // auto-refresh every 30s
+setInterval(loadDashboard, 30000);
 updateToolFields();
 </script>
 </body>
