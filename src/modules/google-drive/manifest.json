@@ -1,0 +1,16 @@
+{
+  "id": "google-drive",
+  "name": "Google Drive",
+  "version": "1.1.0",
+  "description": "Sync files from Google Drive folders for AI analysis. Supports Google Docs/Sheets/Slides export, subfolder recursion, pagination, and automatic retry.",
+  "author": "ATLAS",
+  "config_schema": {
+    "folder_id": { "type": "string", "required": true, "label": "Google Drive Folder ID" },
+    "credentials_path": { "type": "string", "required": true, "label": "Service account JSON path" },
+    "interval_minutes": { "type": "number", "default": 30, "label": "Sync interval (minutes)" },
+    "file_types": { "type": "string", "default": "pdf,docx,xlsx,csv,json,txt", "label": "File extensions to sync" },
+    "include_subfolders": { "type": "boolean", "default": false, "label": "Recursively scan subfolders" },
+    "max_file_size_mb": { "type": "number", "default": 50, "label": "Max file size to download (MB)" },
+    "export_google_docs": { "type": "boolean", "default": true, "label": "Export Google Docs/Sheets/Slides" }
+  }
+}

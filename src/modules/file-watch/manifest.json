@@ -1,0 +1,12 @@
+{
+  "id": "file-watch",
+  "name": "File Watcher",
+  "version": "1.0.0",
+  "description": "Watch a local folder for new files, extract data via AI pipeline",
+  "author": "ATLAS",
+  "config_schema": {
+    "watch_path": { "type": "string", "required": true, "label": "Watch folder path", "default": "./inbox" },
+    "interval_minutes": { "type": "number", "default": 5, "label": "Scan interval (minutes)" },
+    "auto_archive": { "type": "boolean", "default": false, "label": "Move processed files to archive subfolder" }
+  }
+}

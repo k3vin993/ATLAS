@@ -9,6 +9,7 @@ import playground  from './pages/playground.js';
 import chat        from './pages/chat.js';
 import importPage  from './pages/import.js';
 import knowledge   from './pages/knowledge.js';
+import modules     from './pages/modules.js';
 import settings    from './pages/settings.js';
 import setup       from './pages/setup.js';
 
@@ -22,6 +23,7 @@ router
   .add('chat',        chat)
   .add('knowledge',   knowledge)
   .add('import',      importPage)
+  .add('modules',     modules)
   .add('settings',    settings)
   .add('setup',       setup);
 

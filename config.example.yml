@@ -190,6 +190,27 @@ connectors:
     sync:
       interval_minutes: 15
 
+# ─── Modules ─────────────────────────────────────────────────────────────────
+# Odoo-style plugin modules for data source integration.
+# Built-in modules live in src/modules/, external in modules/ (gitignored).
+# Each key matches the module's manifest.json "id".
+
+modules:
+  file-watch:
+    enabled: false
+    watch_path: ./inbox
+    interval_minutes: 5
+    auto_archive: false
+  google-drive:
+    enabled: false
+    folder_id: ""                           # ID з URL папки: drive.google.com/drive/folders/<ID>
+    credentials_path: ""                    # шлях до service account JSON
+    interval_minutes: 30
+    file_types: "pdf,docx,xlsx,csv,json,txt"
+    include_subfolders: false               # рекурсивний обхід підпапок
+    max_file_size_mb: 50                    # максимальний розмір файлу (MB)
+    export_google_docs: true                # експорт Google Docs/Sheets/Slides → PDF/CSV
+
 # ─── Models ──────────────────────────────────────────────────────────────────
 # Which ATLAS data models to enable. All enabled by default.
 

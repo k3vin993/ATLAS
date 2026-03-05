@@ -22,6 +22,7 @@ import { WebhookEmitter } from "./webhooks.js";
 import { buildHealthReport } from "./health.js";
 import { ConnectorRunner } from "./connector-runner.js";
 import { ModelRegistry } from "./ai/model-registry.js";
+import { ModuleLoader } from "./module-loader.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const UI_PATH = join(__dirname, "ui", "index.html");
@@ -44,6 +45,10 @@ const SERVER_START = Date.now();
 
 // AI model registry (multi-model support)
 let modelRegistry = ModelRegistry.fromConfig(atlas.config?.ai);
+
+// Module loader (Odoo-style plugin system)
+const moduleLoader = new ModuleLoader(atlas, atlas.config);
+moduleLoader.loadAll().catch(e => console.error(`[ATLAS] Module loader error: ${e.message}`));
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -726,6 +731,64 @@ const httpServer = createServer(async (req, res) => {
       } catch (e) { json({ error: e.message }, 400); }
     });
     return;
+  }
+
+  // ── Module endpoints ──────────────────────────────────────────────────────────
+
+  if (path === '/api/modules' && req.method === 'GET') {
+    return json({ modules: moduleLoader.getModules() });
+  }
+
+  const moduleIdMatch = path.match(/^\/api\/modules\/([^/]+)$/);
+  if (moduleIdMatch && req.method === 'GET') {
+    const mod = moduleLoader.getModule(moduleIdMatch[1]);
+    if (!mod) return json({ error: 'Module not found' }, 404);
+    return json({ module: mod });
+  }
+
+  const moduleEnableMatch = path.match(/^\/api\/modules\/([^/]+)\/enable$/);
+  if (moduleEnableMatch && req.method === 'POST') {
+    const id = moduleEnableMatch[1];
+    const mod = moduleLoader.getModule(id);
+    if (!mod) return json({ error: 'Module not found' }, 404);
+    try {
+      // Update config.yml
+      const configPath = join(__dirname, '..', 'config.yml');
+      if (!atlas.config.modules) atlas.config.modules = {};
+      if (!atlas.config.modules[id]) atlas.config.modules[id] = {};
+      atlas.config.modules[id].enabled = true;
+      writeFileSync(configPath, YAML.stringify(atlas.config, { indent: 2 }), 'utf8');
+      await moduleLoader.startModule(id);
+      return json({ ok: true, message: `Module "${id}" enabled` });
+    } catch (e) { return json({ ok: false, error: e.message }, 500); }
+  }
+
+  const moduleDisableMatch = path.match(/^\/api\/modules\/([^/]+)\/disable$/);
+  if (moduleDisableMatch && req.method === 'POST') {
+    const id = moduleDisableMatch[1];
+    const mod = moduleLoader.getModule(id);
+    if (!mod) return json({ error: 'Module not found' }, 404);
+    try {
+      await moduleLoader.stopModule(id);
+      // Update config.yml
+      const configPath = join(__dirname, '..', 'config.yml');
+      if (!atlas.config.modules) atlas.config.modules = {};
+      if (!atlas.config.modules[id]) atlas.config.modules[id] = {};
+      atlas.config.modules[id].enabled = false;
+      writeFileSync(configPath, YAML.stringify(atlas.config, { indent: 2 }), 'utf8');
+      return json({ ok: true, message: `Module "${id}" disabled` });
+    } catch (e) { return json({ ok: false, error: e.message }, 500); }
+  }
+
+  const moduleSyncMatch = path.match(/^\/api\/modules\/([^/]+)\/sync$/);
+  if (moduleSyncMatch && req.method === 'POST') {
+    const id = moduleSyncMatch[1];
+    const mod = moduleLoader.getModule(id);
+    if (!mod) return json({ error: 'Module not found' }, 404);
+    try {
+      const result = await moduleLoader.runModule(id);
+      return json({ ok: true, module: id, result });
+    } catch (e) { return json({ ok: false, error: e.message }, 500); }
   }
 
   // ── Web UI ────────────────────────────────────────────────────────────────────
