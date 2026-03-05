@@ -47,7 +47,7 @@ const SERVER_START = Date.now();
 let modelRegistry = ModelRegistry.fromConfig(atlas.config?.ai);
 
 // Module loader (Odoo-style plugin system)
-const moduleLoader = new ModuleLoader(atlas, atlas.config);
+const moduleLoader = new ModuleLoader(atlas, atlas.config, modelRegistry);
 moduleLoader.loadAll().catch(e => console.error(`[ATLAS] Module loader error: ${e.message}`));
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -570,12 +570,15 @@ const httpServer = createServer(async (req, res) => {
 
         const { processFile } = await import('./ai/extract-pipeline.js');
         const { ConnectorRunner: CR } = await import('./connector-runner.js');
+        const { KnowledgeEngine } = await import('./ai/knowledge-engine.js');
         const tmpRunner = new CR(atlas, atlas.config ?? {});
+        const ke = new KnowledgeEngine(atlas, modelRegistry);
 
         const result = await processFile(tmpPath, {
           atlas,
           registry: modelRegistry,
           upsert: (entity, record) => tmpRunner._upsert(entity, record),
+          knowledgeEngine: ke,
         });
 
         try { unlinkSync(tmpPath); } catch {}
@@ -729,6 +732,27 @@ const httpServer = createServer(async (req, res) => {
         if (!p) return json({ error: 'path is required' }, 400);
         json(atlas.createKnowledgeFolder(p));
       } catch (e) { json({ error: e.message }, 400); }
+    });
+    return;
+  }
+
+  // ── Knowledge enrichment endpoint ────────────────────────────────────────────
+
+  if (path === '/api/knowledge/enrich' && req.method === 'POST') {
+    let body = '';
+    req.on('data', d => body += d);
+    req.on('end', async () => {
+      try {
+        const { text, source, topic } = JSON.parse(body);
+        if (!text) return json({ ok: false, error: 'text is required' }, 400);
+        const { KnowledgeEngine } = await import('./ai/knowledge-engine.js');
+        const ke = new KnowledgeEngine(atlas, modelRegistry);
+        if (!ke.isConfigured()) return json({ ok: false, error: 'AI not configured for knowledge enrichment' }, 400);
+        const result = await ke.enrichFromText(text, source ?? 'manual', topic ?? '');
+        json(result);
+      } catch (e) {
+        json({ ok: false, error: e.message }, 500);
+      }
     });
     return;
   }

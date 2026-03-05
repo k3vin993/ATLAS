@@ -94,10 +94,18 @@ export default {
         const { ConnectorRunner } = await import('../../connector-runner.js');
         const tmpRunner = new ConnectorRunner(ctx.atlas, ctx.atlas.config ?? {});
 
+        // Knowledge engine for auto-enrichment
+        let ke = null;
+        if (ctx.registry) {
+          const { KnowledgeEngine } = await import('../../ai/knowledge-engine.js');
+          ke = new KnowledgeEngine(ctx.atlas, ctx.registry);
+        }
+
         const result = await processFile(filePath, {
           atlas: ctx.atlas,
-          registry: null, // Will use default from config
+          registry: ctx.registry,
           upsert: (entity, record) => tmpRunner._upsert(entity, record),
+          knowledgeEngine: ke,
         });
 
         if (result.ok) {

@@ -57,10 +57,11 @@ function walkDir(dir) {
  * @param {import('./model-registry.js').ModelRegistry} opts.registry - Model registry (new multi-model)
  * @param {Function} opts.upsert - Upsert function: (entity, record) => void
  * @param {boolean} opts.force - Skip dedup check
- * @returns {Promise<{ok, filename, hash, entities, records, usage, error?}>}
+ * @param {import('./knowledge-engine.js').KnowledgeEngine} opts.knowledgeEngine - Optional KE for auto-enrichment
+ * @returns {Promise<{ok, filename, hash, entities, records, usage, knowledgeUpdates?, error?}>}
  */
 export async function processFile(filePath, opts = {}) {
-  const { atlas, aiConfig, registry, upsert, force } = opts;
+  const { atlas, aiConfig, registry, upsert, force, knowledgeEngine } = opts;
   const filename = filePath.split('/').pop();
 
   // Compute hash for dedup
@@ -116,6 +117,24 @@ export async function processFile(filePath, opts = {}) {
   // Log extraction result
   logExtraction(atlas, hash, filename, result.entities.length, totalRecords, result.usage, null);
 
+  // Optional knowledge base enrichment
+  let knowledgeUpdates = null;
+  if (knowledgeEngine?.isConfigured()) {
+    try {
+      const enrichResult = await knowledgeEngine.enrichFromExtraction(
+        { entities: result.entities, filename },
+        { source: `file: ${filename}`, date: new Date().toISOString().slice(0, 10) },
+      );
+      if (enrichResult.ok) {
+        knowledgeUpdates = enrichResult;
+      } else {
+        console.error(`[ATLAS AI] Knowledge enrichment failed: ${enrichResult.error}`);
+      }
+    } catch (e) {
+      console.error(`[ATLAS AI] Knowledge enrichment error: ${e.message}`);
+    }
+  }
+
   return {
     ok: true,
     filename,
@@ -124,6 +143,7 @@ export async function processFile(filePath, opts = {}) {
     records: totalRecords,
     usage: result.usage,
     extracted: result.entities.map(e => ({ entity_type: e.entity_type, count: e.records.length })),
+    knowledgeUpdates,
   };
 }
 

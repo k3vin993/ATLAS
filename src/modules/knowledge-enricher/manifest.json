@@ -1,0 +1,12 @@
+{
+  "id": "knowledge-enricher",
+  "name": "Knowledge Enricher",
+  "version": "1.0.0",
+  "description": "Automatically enriches knowledge base from new AI extractions",
+  "author": "ATLAS",
+  "config_schema": {
+    "interval_minutes": { "type": "number", "default": 60, "label": "Review interval (min)" },
+    "auto_enrich_extractions": { "type": "boolean", "default": true, "label": "Auto-enrich after extraction" },
+    "max_files_per_run": { "type": "number", "default": 5, "label": "Max new extractions per run" }
+  }
+}

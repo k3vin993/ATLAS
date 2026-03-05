@@ -58,6 +58,7 @@ ai:
   default: claude
   chat: claude
   extract: claude
+  knowledge: claude
 
 # ─── Connectors ──────────────────────────────────────────────────────────────
 # Each connector pulls data from a source and maps it to ATLAS standard models.
@@ -201,6 +202,11 @@ modules:
     watch_path: ./inbox
     interval_minutes: 5
     auto_archive: false
+  knowledge-enricher:
+    enabled: false
+    auto_enrich_extractions: true    # auto-enrich KB after AI extraction
+    interval_minutes: 60             # periodic review of new extractions
+    max_files_per_run: 5             # max extractions to process per run
   google-drive:
     enabled: false
     folder_id: ""                           # ID з URL папки: drive.google.com/drive/folders/<ID>

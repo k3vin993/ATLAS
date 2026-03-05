@@ -7,7 +7,7 @@ import { LlmClient } from './llm-client.js';
 
 export class ModelRegistry {
   #models = new Map();
-  #roles = { default: null, chat: null, extract: null };
+  #roles = { default: null, chat: null, extract: null, knowledge: null };
 
   /**
    * Build a registry from the ai: config block.
@@ -23,7 +23,7 @@ export class ModelRegistry {
         registry.#models.set(entry.id, client);
       }
       // Role routing
-      for (const role of ['default', 'chat', 'extract']) {
+      for (const role of ['default', 'chat', 'extract', 'knowledge']) {
         const id = aiConfig[role];
         if (id && registry.#models.has(id)) {
           registry.#roles[role] = id;

@@ -22,10 +22,12 @@ export class ModuleLoader {
   /**
    * @param {import('./atlas.js').Atlas} atlas
    * @param {object} config — full atlas config (config.yml parsed)
+   * @param {import('./ai/model-registry.js').ModelRegistry} registry — AI model registry (optional)
    */
-  constructor(atlas, config) {
+  constructor(atlas, config, registry = null) {
     this.atlas = atlas;
     this.config = config;
+    this.registry = registry;
     this.modules = new Map(); // id → { manifest, instance, timer, status, error, last_run, records_processed }
   }
 
@@ -73,6 +75,7 @@ export class ModuleLoader {
     return {
       atlas,
       config: moduleConfig ?? {},
+      registry: this.registry,
       logger: {
         info: (...args) => console.error(`[ATLAS:${moduleId}]`, ...args),
         warn: (...args) => console.error(`[ATLAS:${moduleId}] WARN:`, ...args),
